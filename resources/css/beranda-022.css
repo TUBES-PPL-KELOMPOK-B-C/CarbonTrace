@@ -70,6 +70,17 @@ body {
 .ct-tombol:hover:not(:disabled) { filter:brightness(1.08); }
 @media (max-width:640px) { .ct-tombol { height:52px; width:100%; } }
 
+.ct-isian-grup { display:flex; flex-direction:column; gap:var(--ct-s2); }
+.ct-label      { font-size:14px; color:var(--ct-text-muted); }
+.ct-isian {
+  height:48px; padding:0 var(--ct-s4); border-radius:var(--ct-r-ctrl);
+  background:var(--ct-surface); border:1px solid var(--ct-border);
+  color:var(--ct-text); font-family:inherit; font-size:15px; width:100%;
+}
+.ct-isian::placeholder { color:var(--ct-text-muted); opacity:.7; }
+.ct-isian[aria-invalid="true"] { border-color:var(--ct-danger); }
+.ct-galat { font-size:13px; color:var(--ct-danger); }
+
 .ct-kartu {
   background:var(--ct-surface); border:1px solid var(--ct-border);
   border-radius:var(--ct-r-card); padding:var(--ct-s5);
@@ -268,6 +279,20 @@ html { scroll-padding-top: 112px; }
   color: var(--ct-bg); font-weight: 700;
 }
 .lp-pelat-tombol--isi:hover { filter: brightness(1.08); }
+
+/* pengguna yang sudah masuk: inisial + nama depan, lalu tombol Keluar */
+.lp-pelat-tombol--pengguna { padding-left: var(--ct-s1); border-color: var(--ct-border); color: var(--ct-text); cursor: default; }
+.lp-avatar {
+  display: grid; place-items: center;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ct-primary), var(--ct-accent));
+  font-size: 14px; font-weight: 800;
+  color: var(--ct-bg);
+}
+.lp-pengguna__nama { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lp-nav__keluar { display: contents; }
+.lp-nav__keluar button { font-family: inherit; background: transparent; cursor: pointer; }
 
 .lp-nav__burger {
   display: none;
@@ -795,7 +820,8 @@ html { scroll-padding-top: 112px; }
   .lp-nav__pelat { gap: var(--ct-s2); padding: 0 var(--ct-s2) 0 var(--ct-s4); }
   .lp-nav__pelat > .lp-merek { gap: var(--ct-s2); }
   .lp-nav__tautan a { padding-inline: var(--ct-s1); }
-  .lp-nav__pelat > .lp-nav__aksi .lp-ikon-kecil { display: none; }
+  .lp-nav__pelat > .lp-nav__aksi .lp-ikon-kecil,
+  .lp-nav__pelat > .lp-nav__aksi .lp-pengguna__nama { display: none; }
   .lp-nav__pelat > .lp-nav__aksi .lp-pelat-tombol { padding: 0 var(--ct-s3); }
 }
 

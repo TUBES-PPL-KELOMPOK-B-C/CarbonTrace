@@ -1,0 +1,172 @@
+/* ==========================================================================
+   Halaman masuk dan daftar (KF-01). Token --ct-* berasal dari beranda-022.css
+   (sementara) dan nanti dari app.css.
+   ========================================================================== */
+
+.lp-auth {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+}
+/* kisi latar sedikit lebih redup supaya kartu lebih menonjol */
+.lp-auth .lp-latar { --lp-latar-terang: .75; }
+
+.lp-auth__merek {
+  position: absolute; top: var(--ct-s5); left: var(--ct-s5);
+  display: inline-flex; align-items: center; gap: var(--ct-s2);
+  padding: var(--ct-s2) var(--ct-s3);
+  border-radius: var(--ct-r-pill);
+  font-size: 14px; font-weight: 700; letter-spacing: 1px;
+  color: var(--ct-text);
+}
+.lp-auth__merek:hover { color: var(--ct-primary); }
+
+.lp-auth__isi {
+  flex: 1;
+  display: grid; place-items: center;
+  padding: 96px var(--ct-s4) var(--ct-s6);
+}
+
+.lp-auth__kartu {
+  position: relative;
+  width: 100%; max-width: 460px;
+  padding: var(--ct-s6);
+  border-radius: var(--ct-r-card);
+  border: 1px solid var(--ct-border);
+  background: color-mix(in srgb, var(--ct-surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 60px color-mix(in srgb, var(--ct-primary) 10%, transparent);
+  text-align: center;
+}
+
+.lp-auth__lambang {
+  position: relative;
+  display: inline-grid; place-items: center;
+  margin-bottom: var(--ct-s4);
+}
+.lp-auth__lambang::before {
+  content: ''; position: absolute; z-index: -1;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ct-primary) 40%, transparent) 0%, transparent 70%);
+}
+.lp-auth__lambang .lp-lambang {
+  width: 56px; height: 56px;
+  filter: drop-shadow(0 0 12px var(--lp-cahaya));
+}
+
+.lp-auth__judul { margin: 0; font-size: 24px; font-weight: 800; line-height: 1.3; }
+.lp-auth__sub { margin: var(--ct-s2) 0 var(--ct-s5); font-size: 14px; color: var(--ct-text-muted); }
+
+.lp-auth__galat {
+  margin-bottom: var(--ct-s4);
+  padding: var(--ct-s3) var(--ct-s4);
+  border-radius: var(--ct-r-ctrl);
+  border: 1px solid color-mix(in srgb, var(--ct-danger) 45%, transparent);
+  background: color-mix(in srgb, var(--ct-danger) 12%, transparent);
+  font-size: 14px; text-align: left;
+  color: var(--ct-text);
+}
+
+/* pesan berhasil, mis. "tautan sudah dikirim" atau "kata sandi berhasil diubah" */
+.lp-auth__info {
+  margin-bottom: var(--ct-s4);
+  padding: var(--ct-s3) var(--ct-s4);
+  border-radius: var(--ct-r-ctrl);
+  border: 1px solid color-mix(in srgb, var(--ct-primary) 45%, transparent);
+  background: color-mix(in srgb, var(--ct-primary) 12%, transparent);
+  font-size: 14px; text-align: left;
+  color: var(--ct-text);
+}
+.lp-auth__galat a { font-weight: 700; color: var(--ct-primary); text-decoration: underline; }
+
+.lp-auth__form { display: flex; flex-direction: column; gap: var(--ct-s4); text-align: left; }
+
+/* baris "Ingat saya" dan "Lupa kata sandi?" */
+.lp-auth__baris { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ct-s2) var(--ct-s4); }
+.lp-auth__lupa { font-size: 14px; font-weight: 600; color: var(--ct-primary); border-radius: var(--ct-s1); }
+.lp-auth__lupa:hover { text-decoration: underline; }
+.lp-auth__opsional { color: var(--ct-text-muted); opacity: .8; }
+
+/* kolom kata sandi dengan tombol mata */
+.lp-sandi { position: relative; }
+.lp-sandi .ct-isian { padding-right: 52px; }
+/* Edge menambahkan tombol mata bawaannya sendiri; disembunyikan supaya hanya ada satu.
+   Sengaja dua aturan terpisah: Edge baru tidak mengenal ::-ms-clear, dan bila digabung dalam
+   satu daftar selektor, seluruh aturannya diabaikan. */
+.lp-sandi .ct-isian::-ms-reveal { display: none; }
+.lp-sandi .ct-isian::-ms-clear { display: none; }
+.lp-sandi__mata {
+  position: absolute; top: 50%; right: var(--ct-s1);
+  display: grid; place-items: center;
+  width: 40px; height: 40px;
+  translate: 0 -50%;
+  padding: 0; border: 0;
+  border-radius: var(--ct-r-ctrl);
+  background: transparent; color: var(--ct-text-muted);
+  cursor: pointer;
+}
+.lp-sandi__mata:hover { color: var(--ct-text); }
+.lp-sandi__ikon {
+  width: 20px; height: 20px;
+  fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.lp-sandi__ikon--tutup, .lp-sandi__mata[aria-pressed="true"] .lp-sandi__ikon--buka { display: none; }
+.lp-sandi__mata[aria-pressed="true"] .lp-sandi__ikon--tutup { display: block; }
+
+/* penanda kekuatan kata sandi */
+.ct-kekuatan-sandi { display: flex; align-items: center; gap: var(--ct-s3); }
+.ct-kekuatan-sandi__batang { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ct-s1); }
+.ct-kekuatan-sandi__batang i {
+  height: 4px; border-radius: var(--ct-r-pill);
+  background: var(--ct-border);
+  transition: background-color .2s ease;
+}
+.ct-kekuatan-sandi__teks { min-width: 84px; font-size: 12px; text-align: right; color: var(--ct-text-muted); }
+.ct-kekuatan-sandi[data-kekuatan="1"] i:nth-child(-n + 1) { background: var(--ct-danger); }
+.ct-kekuatan-sandi[data-kekuatan="2"] i:nth-child(-n + 2) { background: var(--ct-warning); }
+.ct-kekuatan-sandi[data-kekuatan="3"] i:nth-child(-n + 3) { background: var(--ct-primary); }
+.ct-kekuatan-sandi[data-kekuatan="4"] i { background: var(--ct-accent); }
+
+.lp-auth__centang {
+  display: flex; align-items: flex-start; gap: var(--ct-s2);
+  font-size: 14px; color: var(--ct-text-muted);
+  cursor: pointer;
+}
+.lp-auth__centang input {
+  flex: none;
+  width: 18px; height: 18px; margin: 2px 0 0;
+  accent-color: var(--ct-primary);
+}
+
+.lp-auth__kirim { width: 100%; height: 52px; margin-top: var(--ct-s1); font-size: 16px; font-weight: 700; }
+.lp-auth__kirim[aria-busy="true"] { opacity: .7; cursor: progress; }
+
+.lp-auth__silang { margin: var(--ct-s5) 0 0; font-size: 14px; color: var(--ct-text-muted); }
+.lp-auth__silang a { font-weight: 700; color: var(--ct-primary); border-radius: var(--ct-s1); }
+.lp-auth__silang a:hover { text-decoration: underline; }
+
+.lp-auth__kaki {
+  margin: 0; padding: var(--ct-s4);
+  font-size: 12px; text-align: center;
+  color: var(--ct-text-muted);
+}
+
+/* 768px: kartu melebar jadi 90 persen layar */
+@media (max-width: 768px) {
+  .lp-auth__kartu { max-width: 90%; }
+}
+
+/* 375px: kartu tanpa bingkai, menyatu dengan latar, tombol melebar penuh */
+@media (max-width: 560px) {
+  .lp-auth__isi { padding-inline: 0; }
+  .lp-auth__kartu {
+    max-width: 100%;
+    padding: var(--ct-s5) var(--ct-s4);
+    border: 0; border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+  }
+  .lp-auth__merek { top: var(--ct-s3); left: var(--ct-s3); }
+}

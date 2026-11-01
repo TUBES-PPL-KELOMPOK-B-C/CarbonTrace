@@ -17,12 +17,13 @@ Route::middleware(['auth'])
         Route::post('/', [ManajemenArtikelEdukasi365::class, 'store'])
             ->name('store');
 
-        Route::get('/{artikel}/edit', [ManajemenArtikelEdukasi365::class, 'edit'])
+        // Nama parameter harus sama dengan argumen controller ($article) supaya route model binding berjalan.
+        Route::get('/{article}/edit', [ManajemenArtikelEdukasi365::class, 'edit'])
             ->name('edit');
 
-        Route::put('/{artikel}', [ManajemenArtikelEdukasi365::class, 'update'])
+        Route::put('/{article}', [ManajemenArtikelEdukasi365::class, 'update'])
             ->name('update');
 
-        Route::delete('/{artikel}', [ManajemenArtikelEdukasi365::class, 'destroy'])
+        Route::delete('/{article}', [ManajemenArtikelEdukasi365::class, 'destroy'])
             ->name('destroy');
     });

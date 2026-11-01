@@ -1,8 +1,13 @@
+@php
+    // Di halaman selain beranda, tautan bagian diarahkan kembali ke beranda.
+    $dasar = request()->routeIs('beranda') ? '' : route('beranda');
+@endphp
+
 <footer class="lp-kaki" id="tentang">
     <div class="lp-wadah">
         <div class="lp-kaki__kisi">
             <div class="lp-kaki__merek">
-                <a href="#beranda" class="lp-merek">
+                <a href="{{ $dasar }}#beranda" class="lp-merek">
                     <svg class="lp-lambang lp-lambang--kecil" aria-hidden="true" focusable="false"><use href="#ct-lambang"/></svg>
                     <span class="lp-merek__nama">CARBONTRACE</span>
                 </a>
@@ -12,11 +17,10 @@
             <nav class="lp-kaki__kolom" aria-labelledby="lp-kaki-produk">
                 <h2 class="lp-kaki__judul" id="lp-kaki-produk">Produk</h2>
                 <ul>
-                    <li><a href="#fitur">Fitur</a></li>
-                    <li><a href="#pratinjau">Kalkulator</a></li>
-                    <li><a href="#cara-kerja">Cara Kerja</a></li>
-                    {{-- TODO: arahkan ke route('auth.masuk') setelah KF-01 selesai dikerjakan Rosi --}}
-                    <li><a href="#">Masuk</a></li>
+                    <li><a href="{{ $dasar }}#fitur">Fitur</a></li>
+                    <li><a href="{{ Route::has('kalkulator.index') ? route('kalkulator.index') : $dasar.'#pratinjau' }}">Kalkulator</a></li>
+                    <li><a href="{{ $dasar }}#cara-kerja">Cara Kerja</a></li>
+                    <li><a href="{{ route('auth.masuk') }}">Masuk</a></li>
                 </ul>
             </nav>
 
@@ -24,9 +28,9 @@
                 <h2 class="lp-kaki__judul" id="lp-kaki-edukasi">Edukasi</h2>
                 <ul>
                     {{-- TODO: arahkan ke halaman masing-masing setelah fiturnya selesai; sementara ke bagian halaman ini --}}
-                    <li><a href="#edukasi">Artikel</a></li>
-                    <li><a href="#edukasi">Rekomendasi Aksi</a></li>
-                    <li><a href="#fitur">Tantangan</a></li>
+                    <li><a href="{{ $dasar }}#edukasi">Artikel</a></li>
+                    <li><a href="{{ $dasar }}#edukasi">Rekomendasi Aksi</a></li>
+                    <li><a href="{{ $dasar }}#fitur">Tantangan</a></li>
                 </ul>
             </nav>
 

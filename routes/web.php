@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+require __DIR__.'/modul-autentikasi-111.php';
+require __DIR__.'/modul-kalkulator-publik-111.php';
+require __DIR__.'/modul-dashboard-111.php';
 require __DIR__.'/modul-edukasi-dan-komunitas-365.php';
 
-Route::get('/', function () {
-    return view('publik.beranda'); // SEMENTARA untuk uji
-});
+Route::view('/', 'publik.beranda')->name('beranda');

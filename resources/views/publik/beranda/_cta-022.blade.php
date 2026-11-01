@@ -21,10 +21,8 @@
             <p class="lp-cta__sub">Gratis, tanpa iklan, dan datanya milikmu sendiri.</p>
 
             <div class="lp-cta__aksi">
-                {{-- TODO: arahkan ke route('auth.daftar') setelah KF-01 selesai dikerjakan Rosi --}}
-                <a href="#" class="ct-tombol ct-tombol--utama lp-tombol-besar">Daftar Gratis</a>
-                {{-- TODO: arahkan ke route('auth.masuk') setelah KF-01 selesai dikerjakan Rosi --}}
-                <a href="#" class="ct-tombol ct-tombol--hantu lp-tombol-besar lp-tombol-berbingkai">Masuk</a>
+                <a href="{{ route('auth.daftar') }}" class="ct-tombol ct-tombol--utama lp-tombol-besar">Daftar Gratis</a>
+                <a href="{{ route('auth.masuk') }}" class="ct-tombol ct-tombol--hantu lp-tombol-besar lp-tombol-berbingkai">Masuk</a>
             </div>
         </div>
     </div>

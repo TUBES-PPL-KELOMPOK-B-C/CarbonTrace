@@ -1,0 +1,135 @@
+/* ==========================================================================
+   Dashboard Jejak Karbon (KF-21). Kerangka sidebar dan bilah atas ada di aplikasi-111.css.
+   ========================================================================== */
+
+.ds-sapa { margin: 0 0 var(--ct-s5); color: var(--ct-text-muted); }
+
+/* banner pengumuman */
+.ds-umum {
+  display: flex; align-items: flex-start; gap: var(--ct-s3);
+  margin-bottom: var(--ct-s5);
+  padding: var(--ct-s4);
+  border-radius: var(--ct-r-card);
+  border: 1px solid color-mix(in srgb, var(--ct-info) 40%, transparent);
+  background: color-mix(in srgb, var(--ct-info) 10%, transparent);
+}
+.ds-umum .ap-ikon { margin-top: 2px; color: var(--ct-info); }
+.ds-umum__judul { margin: 0; font-weight: 700; }
+.ds-umum__isi { margin: var(--ct-s1) 0 0; font-size: 14px; color: var(--ct-text-muted); }
+
+/* baris 1: empat kartu statistik */
+.ds-statistik {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--ct-s4);
+  margin-bottom: var(--ct-s5);
+}
+.ds-stat {
+  display: flex; flex-direction: column; gap: var(--ct-s2);
+  min-width: 0;
+  padding: var(--ct-s5);
+  border-radius: var(--ct-r-card);
+  border: 1px solid var(--ct-border);
+  background: var(--ct-surface);
+}
+.ds-stat__label { margin: 0; font-size: 13px; font-weight: 600; color: var(--ct-text-muted); }
+.ds-stat__angka { margin: 0; font-size: 30px; font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; }
+.ds-stat__satuan { font-size: 14px; font-weight: 600; color: var(--ct-text-muted); }
+.ds-stat__ket { margin: 0; font-size: 13px; color: var(--ct-text-muted); }
+.ds-stat--ajak { justify-content: space-between; }
+.ds-stat__tombol { align-self: flex-start; height: 40px; font-size: 14px; }
+
+/* tombol yang tujuannya belum ada */
+.ds-stat__tombol[aria-disabled="true"],
+.ds-ajak .ct-tombol[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+.ds-gagal { margin: 0; font-size: 14px; color: var(--ct-danger); }
+.ds-gagal a { font-weight: 700; color: var(--ct-text); text-decoration: underline; }
+
+/* pengguna hari pertama: kartu ajakan besar */
+.ds-ajak {
+  display: flex; flex-direction: column; align-items: center; gap: var(--ct-s3);
+  margin-bottom: var(--ct-s5);
+  padding: var(--ct-s7) var(--ct-s5);
+  border-radius: var(--ct-r-card);
+  border: 1px solid color-mix(in srgb, var(--ct-primary) 40%, var(--ct-border));
+  background:
+    radial-gradient(ellipse at top, color-mix(in srgb, var(--ct-primary) 14%, transparent), transparent 70%),
+    var(--ct-surface);
+  text-align: center;
+}
+.ds-ajak__gambar {
+  width: 160px; height: 64px;
+  fill: none; stroke: var(--ct-primary); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
+}
+.ds-ajak__gambar circle { fill: var(--ct-accent); stroke: none; }
+.ds-ajak__judul { max-width: 560px; margin: 0; font-size: 22px; font-weight: 800; }
+.ds-ajak__teks { max-width: 520px; margin: 0; color: var(--ct-text-muted); }
+
+/* baris 2: grafik tren (dua kolom) dan rincian kategori (satu kolom) */
+.ds-grafik { display: grid; grid-template-columns: 2fr 1fr; gap: var(--ct-s4); margin-bottom: var(--ct-s5); }
+.ds-kartu {
+  min-width: 0;
+  padding: var(--ct-s5);
+  border-radius: var(--ct-r-card);
+  border: 1px solid var(--ct-border);
+  background: var(--ct-surface);
+}
+.ds-kartu__judul { margin: 0 0 var(--ct-s4); font-size: 16px; font-weight: 700; }
+
+.ds-kosong {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--ct-s3);
+  min-height: 160px;
+  font-size: 14px; text-align: center;
+  color: var(--ct-text-muted);
+}
+.ds-kosong p { max-width: 320px; margin: 0; }
+.ds-kosong__gambar {
+  width: 140px; height: 56px;
+  fill: none; stroke: var(--ct-border); stroke-width: 3; stroke-dasharray: 6 6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* baris 3: aktivitas terbaru */
+.ds-terbaru { margin-bottom: var(--ct-s8); }
+.ds-daftar { margin: 0; padding: 0; list-style: none; }
+.ds-daftar__butir {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--ct-s4);
+  padding: var(--ct-s3) 0;
+  border-top: 1px solid var(--ct-border);
+}
+.ds-daftar__butir:first-child { border-top: 0; }
+.ds-daftar__nama { margin: 0; font-weight: 600; }
+.ds-daftar__ket { margin: 0; font-size: 13px; color: var(--ct-text-muted); }
+.ds-daftar__emisi { margin: 0; font-weight: 700; white-space: nowrap; }
+.ds-daftar__emisi span { font-size: 12px; font-weight: 600; color: var(--ct-text-muted); }
+
+/* tombol bulat bertanda tambah di kanan bawah */
+.ds-tambah {
+  position: fixed; right: var(--ct-s6); bottom: var(--ct-s6); z-index: 15;
+  display: grid; place-items: center;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ct-primary), var(--ct-accent));
+  color: var(--ct-bg);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--ct-primary) 35%, transparent);
+}
+.ds-tambah svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
+.ds-tambah[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+/* 900px ke bawah: kartu statistik dua kolom */
+@media (max-width: 900px) {
+  .ds-statistik { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* 768px: isi dua kolom */
+@media (max-width: 768px) {
+  .ds-grafik { grid-template-columns: 1fr 1fr; }
+}
+
+/* 375px: satu kolom, tombol tambah tetap di kanan bawah di atas menu bawah */
+@media (max-width: 560px) {
+  .ds-statistik, .ds-grafik { grid-template-columns: 1fr; }
+  .ds-stat__angka { font-size: 26px; }
+  .ds-ajak { padding: var(--ct-s6) var(--ct-s4); }
+  .ds-ajak__judul { font-size: 19px; }
+  .ds-tambah { right: var(--ct-s4); bottom: calc(var(--ap-bawah) + var(--ct-s4) + env(safe-area-inset-bottom)); }
+}
