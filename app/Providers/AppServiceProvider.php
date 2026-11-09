@@ -2,6 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Activitie221;
+use App\Models\ActivityTemplate221;
+use App\Models\QuizQuestion221;
+use App\Policies\ManajemenBankPertanyaanKuisPolicy221;
+use App\Policies\PencatatanAktivitasEmisiHarianPolicy221;
+use App\Policies\TemplateAktivitasRutinPolicy221;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Pemetaan Policy Modul 2 (Hadi-221)
+        Gate::policy(Activitie221::class, PencatatanAktivitasEmisiHarianPolicy221::class);
+        Gate::policy(ActivityTemplate221::class, TemplateAktivitasRutinPolicy221::class);
+        Gate::policy(QuizQuestion221::class, ManajemenBankPertanyaanKuisPolicy221::class);
     }
 }
