@@ -11,6 +11,12 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/beranda-022.css',
                 'resources/js/beranda-022.js',
+                'resources/css/autentikasi-111.css',
+                'resources/js/autentikasi-111.js',
+                'resources/css/kalkulator-111.css',
+                'resources/js/kalkulator-111.js',
+                'resources/css/aplikasi-111.css',
+                'resources/css/dashboard-111.css',
             ],
             refresh: true,
             fonts: [

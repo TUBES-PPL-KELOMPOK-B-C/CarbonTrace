@@ -54,8 +54,19 @@ if (nav) {
 
 // 4. Menu aktif mengikuti bagian yang sedang dilihat; penanda pelat meluncur ke menu aktif
 const daftar = document.querySelector('[data-nav-tautan]');
+const halamanKini = daftar?.querySelector('[aria-current="page"]');
 
-if (daftar) {
+// Di halaman lain (mis. kalkulator) tidak ada bagian yang diikuti: penanda cukup diam di menu halaman itu
+if (halamanKini) {
+    const letakkan = () => {
+        daftar.style.setProperty('--penanda-x', `${halamanKini.getBoundingClientRect().left - daftar.getBoundingClientRect().left}px`);
+        daftar.style.setProperty('--penanda-w', `${halamanKini.offsetWidth}px`);
+        daftar.classList.add('lp-nav__tautan--siap');
+    };
+    letakkan();
+    window.addEventListener('resize', letakkan);
+    document.fonts?.ready.then(letakkan);
+} else if (daftar?.querySelector('a[href^="#"]')) {
     const tautan = [...daftar.querySelectorAll('a[href^="#"]')];
     const bagian = tautan.map((a) => document.querySelector(a.getAttribute('href'))).filter(Boolean);
     let aktif = null;

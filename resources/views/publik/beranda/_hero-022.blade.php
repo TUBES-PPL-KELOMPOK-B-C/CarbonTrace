@@ -17,10 +17,9 @@
         <p class="lp-hero__pendukung">Ubah perjalanan, listrik, makanan, dan sampah harianmu menjadi angka kg CO2e yang bisa kamu lihat, bandingkan antarbulan, dan turunkan.</p>
 
         <div class="lp-hero__aksi">
-            {{-- TODO: arahkan ke route('auth.daftar') setelah KF-01 selesai dikerjakan Rosi --}}
-            <a href="#" class="ct-tombol ct-tombol--utama lp-tombol-besar">Mulai Gratis</a>
-            {{-- TODO: arahkan ke halaman kalkulator publik setelah KF-24 selesai dikerjakan Hadi --}}
-            <a href="#" class="ct-tombol ct-tombol--sekunder lp-tombol-besar">Coba Kalkulator</a>
+            <a href="{{ route('auth.daftar') }}" class="ct-tombol ct-tombol--utama lp-tombol-besar">Mulai Gratis</a>
+            {{-- Kalkulator publik (KF-24, Hadi): otomatis aktif begitu rute kalkulator.index terdaftar --}}
+            <a href="{{ Route::has('kalkulator.index') ? route('kalkulator.index') : '#' }}" class="ct-tombol ct-tombol--sekunder lp-tombol-besar">Coba Kalkulator</a>
             <a href="#cara-kerja" class="ct-tombol lp-tombol-besar lp-tombol-cahaya">Lihat Cara Kerja</a>
         </div>
     </div>

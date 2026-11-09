@@ -1,0 +1,135 @@
+/* ==========================================================================
+   Kalkulator Jejak Karbon Publik (KF-24). Token --ct-* berasal dari beranda-022.css
+   (sementara) dan nanti dari app.css.
+   ========================================================================== */
+
+/* kisi latar diredupkan supaya formulir lebih menonjol */
+.lp-kal-halaman .lp-latar { --lp-latar-terang: .7; }
+
+.lp-kal { padding-top: calc(var(--lp-jarak-bagian) + var(--ct-s7)); min-height: 100vh; }
+.lp-kal__wadah { max-width: 560px; margin: 0 auto; }
+.lp-kal__kepala { margin-bottom: var(--ct-s6); }
+.lp-kal__sub { margin: var(--ct-s3) 0 0; color: var(--ct-text-muted); }
+
+.lp-kal__form,
+.lp-kal__kosong {
+  display: flex; flex-direction: column; gap: var(--ct-s5);
+  background: color-mix(in srgb, var(--ct-surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 60px color-mix(in srgb, var(--ct-primary) 10%, transparent);
+}
+.lp-kal__kosong { align-items: center; text-align: center; }
+.lp-kal__kosong p { margin: 0; color: var(--ct-text-muted); }
+.lp-kal__kosong .lp-lambang { width: 56px; height: 56px; color: var(--ct-primary); }
+.lp-kal__kosong .ct-kartu__judul { margin: 0; }
+
+.lp-kal__galat {
+  padding: var(--ct-s3) var(--ct-s4);
+  border-radius: var(--ct-r-ctrl);
+  border: 1px solid color-mix(in srgb, var(--ct-danger) 45%, transparent);
+  background: color-mix(in srgb, var(--ct-danger) 12%, transparent);
+  font-size: 14px;
+}
+.lp-kal__galat[hidden] { display: none; }
+
+.lp-kal__langkah { margin: 0; padding: 0; border: 0; min-width: 0; }
+.lp-kal__langkah legend { padding: 0; margin-bottom: var(--ct-s2); }
+
+/* kartu pilihan kategori: radio yang tampil sebagai kartu berikon */
+.ct-pilihan-kartu { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ct-s2); }
+.ct-pilihan-kartu__butir { position: relative; cursor: pointer; }
+.ct-pilihan-kartu__butir input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.ct-pilihan-kartu__isi {
+  display: flex; flex-direction: column; align-items: center; gap: var(--ct-s2);
+  height: 100%;
+  padding: var(--ct-s3) var(--ct-s2);
+  border-radius: var(--ct-r-ctrl);
+  border: 1px solid var(--ct-border);
+  background: var(--ct-surface);
+  font-size: 13px; font-weight: 600; text-align: center;
+  color: var(--ct-text-muted);
+  transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+}
+.ct-pilihan-kartu__ikon {
+  width: 26px; height: 26px;
+  fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.ct-pilihan-kartu__butir:hover .ct-pilihan-kartu__isi { color: var(--ct-text); }
+.ct-pilihan-kartu__butir input:checked + .ct-pilihan-kartu__isi {
+  border-color: var(--ct-primary);
+  background: color-mix(in srgb, var(--ct-primary) 12%, var(--ct-surface));
+  color: var(--ct-primary);
+}
+.ct-pilihan-kartu__butir input:focus-visible + .ct-pilihan-kartu__isi { box-shadow: var(--ct-ring); }
+
+.lp-kal__pilih { appearance: auto; }
+
+.lp-kal__jumlah { position: relative; }
+.lp-kal__jumlah .ct-isian { padding-right: 96px; }
+.lp-kal__satuan {
+  position: absolute; top: 50%; right: var(--ct-s4);
+  translate: 0 -50%;
+  font-size: 14px; font-weight: 600;
+  color: var(--ct-text-muted);
+  pointer-events: none;
+}
+
+.ct-galat { margin: 0; }
+.ct-galat[hidden] { display: none; }
+
+.lp-kal__kirim { width: 100%; height: 52px; font-size: 16px; font-weight: 700; }
+.lp-kal__kirim[aria-busy="true"] { opacity: .7; cursor: progress; }
+
+/* hasil */
+.lp-kal__hasil { margin-top: var(--ct-s6); scroll-margin-top: 112px; }
+.lp-kal__hasil-judul { margin: 0 0 var(--ct-s3); font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--ct-text-muted); }
+
+.ct-kartu-hasil {
+  display: flex; flex-direction: column; align-items: center; gap: var(--ct-s3);
+  padding: var(--ct-s6) var(--ct-s5);
+  border-radius: var(--ct-r-card);
+  border: 1px solid color-mix(in srgb, var(--ct-primary) 45%, var(--ct-border));
+  background: color-mix(in srgb, var(--ct-primary) 8%, var(--ct-surface));
+  text-align: center;
+}
+.ct-kartu-hasil[hidden] { display: none; }
+.ct-kartu-hasil p { margin: 0; }
+.ct-kartu-hasil--kosong { border-style: dashed; border-color: var(--ct-border); background: transparent; color: var(--ct-text-muted); opacity: .8; }
+.ct-kartu-hasil__angka {
+  font-size: 44px; font-weight: 800; line-height: 1.1;
+  background: linear-gradient(90deg, var(--ct-primary), var(--ct-accent));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ct-kartu-hasil__banding { font-size: 16px; font-weight: 600; }
+.ct-kartu-hasil__rincian { font-size: 13px; color: var(--ct-text-muted); }
+.ct-kartu-hasil__aksi { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--ct-s3); margin-top: var(--ct-s2); }
+
+/* kartu hasil naik singkat saat muncul; dimatikan oleh aturan gerak dikurangi di beranda-022.css */
+.ct-kartu-hasil--baru { animation: ct-hasil-naik .35s ease-out; }
+@keyframes ct-hasil-naik {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* 768px: pola latar disederhanakan, tinggal garis kisi dan simpulnya tanpa aliran, halo, dan kerlip */
+@media (max-width: 768px) {
+  .lp-kal-halaman .lp-latar { --lp-latar-terang: .5; }
+  .lp-kal-halaman .lp-latar svg { animation: none; }
+  .lp-kal-halaman .lp-kisi__aliran,
+  .lp-kal-halaman .lp-kisi__halo,
+  .lp-kal-halaman .lp-kisi__aksen,
+  .lp-kal-halaman .lp-kisi__bintang { display: none; }
+}
+
+/* 375px: kartu kategori dua kolom, tombol hitung menempel di bawah layar */
+@media (max-width: 560px) {
+  .lp-kal { padding-inline: var(--ct-s4); }
+  .lp-kal__form { padding: var(--ct-s5) var(--ct-s4); }
+  .ct-pilihan-kartu { grid-template-columns: repeat(2, 1fr); }
+  .lp-kal__kirim {
+    position: sticky; bottom: var(--ct-s3); z-index: 5;
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--ct-bg) 80%, transparent);
+  }
+  .ct-kartu-hasil__angka { font-size: 36px; }
+}

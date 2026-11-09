@@ -1,0 +1,170 @@
+/* ==========================================================================
+   Kerangka halaman setelah masuk: sidebar kiri 240px, bilah atas 72px, isi di kanan.
+   768px: sidebar tinggal ikon. 560px ke bawah: sidebar jadi menu bawah lima ikon.
+   Token --ct-* berasal dari beranda-022.css (sementara) dan nanti dari app.css.
+   ========================================================================== */
+
+.ap {
+  --ap-sisi: 240px;
+  --ap-atas: 72px;
+  --ap-bawah: 64px;
+  min-height: 100vh;
+}
+:where(.ap a) { color: inherit; text-decoration: none; }
+:where(.ap svg) { display: block; }
+.ap-simbol { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.ap-ikon {
+  flex: none;
+  width: 20px; height: 20px;
+  fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* tautan lewati untuk pengguna papan ketik */
+.ap-lewati {
+  position: absolute; left: var(--ct-s4); top: -100px; z-index: 100;
+  padding: var(--ct-s2) var(--ct-s4);
+  border-radius: var(--ct-r-ctrl);
+  background: var(--ct-primary); color: var(--ct-bg); font-weight: 700;
+}
+.ap-lewati:focus { top: var(--ct-s4); }
+
+/* ---------- sidebar ---------- */
+.ap-sisi {
+  position: fixed; inset: 0 auto 0 0; z-index: 20;
+  display: flex; flex-direction: column; gap: var(--ct-s5);
+  width: var(--ap-sisi);
+  padding: var(--ct-s5) var(--ct-s3);
+  background: var(--ct-bg-alt);
+  border-right: 1px solid var(--ct-border);
+  overflow-y: auto;
+}
+.ap-merek {
+  display: flex; align-items: center; gap: var(--ct-s2);
+  height: 40px; padding: 0 var(--ct-s3);
+  font-size: 15px; font-weight: 800; letter-spacing: 1px;
+}
+.ap-merek__lambang { width: 28px; height: 28px; color: var(--ct-primary); }
+
+.ap-menu { display: flex; flex-direction: column; gap: var(--ct-s1); margin: 0; padding: 0; list-style: none; }
+.ap-menu__tautan {
+  position: relative;
+  display: flex; align-items: center; gap: var(--ct-s3);
+  width: 100%; height: 44px;
+  padding: 0 var(--ct-s3);
+  border: 0; border-radius: var(--ct-r-ctrl);
+  background: none;
+  font: inherit; font-size: 14px; font-weight: 600; text-align: left;
+  color: var(--ct-text-muted);
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+.ap-menu__tautan:hover { background: var(--ct-surface); color: var(--ct-text); }
+/* halaman aktif: dua penanda, garis warna utama di kiri dan teks lebih terang */
+.ap-menu__tautan[aria-current="page"] {
+  background: color-mix(in srgb, var(--ct-primary) 12%, transparent);
+  color: var(--ct-text);
+}
+.ap-menu__tautan[aria-current="page"]::before {
+  content: ''; position: absolute; left: 0; top: 10px; bottom: 10px;
+  width: 3px; border-radius: var(--ct-r-pill);
+  background: var(--ct-primary);
+}
+.ap-menu__tautan[aria-current="page"] .ap-ikon { color: var(--ct-primary); }
+/* menu yang halamannya belum dibuat pemiliknya */
+.ap-menu__tautan--nanti { opacity: .45; cursor: not-allowed; }
+.ap-menu__tautan--nanti:hover { background: none; color: var(--ct-text-muted); }
+
+.ap-keluar { margin-top: auto; }
+
+/* ---------- bilah atas dan isi ---------- */
+.ap-utama { display: flex; flex-direction: column; min-height: 100vh; margin-left: var(--ap-sisi); }
+
+.ap-atas {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between; gap: var(--ct-s4);
+  height: var(--ap-atas);
+  padding: 0 var(--ct-s6);
+  background: color-mix(in srgb, var(--ct-bg) 85%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--ct-border);
+}
+.ap-atas__judul { margin: 0; font-size: 22px; font-weight: 800; }
+.ap-atas__aksi { display: flex; align-items: center; gap: var(--ct-s3); }
+
+.ap-lonceng, .ap-keluar-atas button {
+  display: grid; place-items: center;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--ct-border);
+  background: var(--ct-surface);
+  color: var(--ct-text-muted);
+  cursor: pointer;
+}
+.ap-lonceng:hover, .ap-keluar-atas button:hover { color: var(--ct-text); }
+.ap-keluar-atas { display: none; }
+
+.ap-pengguna { display: flex; align-items: center; gap: var(--ct-s2); font-size: 14px; font-weight: 600; }
+.ap-avatar {
+  display: grid; place-items: center;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ct-primary), var(--ct-accent));
+  color: var(--ct-bg); font-weight: 800;
+}
+
+.ap-isi { flex: 1; width: 100%; max-width: var(--ct-max); padding: var(--ct-s6); outline: none; }
+
+.ap-bawah { display: none; }
+
+/* 1024px: isi menyempit, sidebar tetap terbuka */
+@media (max-width: 1024px) {
+  .ap-atas { padding: 0 var(--ct-s5); }
+  .ap-isi { padding: var(--ct-s5); }
+}
+
+/* 768px: sidebar menyusut jadi ikon saja */
+@media (max-width: 768px) {
+  .ap { --ap-sisi: 72px; }
+  .ap-sisi { align-items: center; padding: var(--ct-s5) var(--ct-s2); }
+  .ap-merek { justify-content: center; padding: 0; }
+  .ap-merek__teks, .ap-menu__label {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .ap-menu__tautan { justify-content: center; width: 48px; padding: 0; }
+}
+
+/* 375px: menu bawah lima ikon, isi satu kolom */
+@media (max-width: 560px) {
+  .ap-sisi { display: none; }
+  .ap-utama { margin-left: 0; padding-bottom: calc(var(--ap-bawah) + env(safe-area-inset-bottom)); }
+  .ap-atas { height: 64px; padding: 0 var(--ct-s4); }
+  .ap-atas__judul { font-size: 20px; }
+  .ap-pengguna__nama { display: none; }
+  .ap-keluar-atas { display: block; }
+  .ap-isi { padding: var(--ct-s4); }
+
+  .ap-bawah {
+    position: fixed; inset: auto 0 0 0; z-index: 20;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    height: calc(var(--ap-bawah) + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--ct-bg-alt);
+    border-top: 1px solid var(--ct-border);
+  }
+  .ap-bawah__tautan {
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    font-size: 11px; font-weight: 600;
+    color: var(--ct-text-muted);
+  }
+  .ap-bawah__tautan[aria-current="page"] { color: var(--ct-primary); }
+  .ap-bawah__tautan[aria-current="page"]::before {
+    content: ''; position: absolute; top: 0; left: 25%; right: 25%;
+    height: 3px; border-radius: 0 0 var(--ct-r-pill) var(--ct-r-pill);
+    background: var(--ct-primary);
+  }
+  .ap-bawah__tautan--nanti { opacity: .45; }
+}
