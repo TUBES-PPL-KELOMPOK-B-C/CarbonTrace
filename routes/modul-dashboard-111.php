@@ -7,3 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/dashboard', [Dashboard111::class, 'index'])
     ->middleware('auth')
     ->name('dashboard.index');
+
+Route::get('/dashboard-alt', [Dashboard111::class, 'index'])
+    ->middleware('auth')
+    ->name('dashboard');
