@@ -26,6 +26,9 @@
             @if (session('status'))
                 <div class="lp-auth__info" role="status" tabindex="-1" data-galat-fokus>
                     {{ session('status') }}
+                    @if (session('tautan_lokal'))
+                        <a href="{{ session('tautan_lokal') }}" class="ct-tombol ct-tombol--sekunder lp-auth__tautan-lokal">Buat Kata Sandi Baru</a>
+                    @endif
                 </div>
             @endif
 

@@ -16,7 +16,9 @@ class KalkulatorPublikTest111 extends TestCase
     // jadi tes ini membuat salinan skemanya sendiri sesuai README.
     private function siapkanFaktor(): array
     {
-        Schema::create('categories', function (Blueprint $table) {
+        // Dibuat hanya bila migrasinya belum ada di repo. Saat ini keduanya dibuat migrasi stub
+        // Modul 2 (Hadi), jadi data uji hanya mengisi kolom yang ada di skema README maupun stub.
+        if (! Schema::hasTable('categories')) Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('icon')->nullable();
@@ -25,7 +27,7 @@ class KalkulatorPublikTest111 extends TestCase
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
-        Schema::create('emission_factors', function (Blueprint $table) {
+        if (! Schema::hasTable('emission_factors')) Schema::create('emission_factors', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
             $table->string('name');
@@ -36,21 +38,21 @@ class KalkulatorPublikTest111 extends TestCase
             $table->timestamps();
         });
 
-        $listrik = DB::table('categories')->insertGetId(['name' => 'Listrik', 'base_unit' => 'kWh']);
-        $sampah = DB::table('categories')->insertGetId(['name' => 'Sampah', 'base_unit' => 'kg']);
+        $listrik = DB::table('categories')->insertGetId(['name' => 'Listrik']);
+        $sampah = DB::table('categories')->insertGetId(['name' => 'Sampah']);
 
         return [
             'listrik' => DB::table('emission_factors')->insertGetId([
                 'category_id' => $listrik, 'name' => 'Listrik PLN', 'unit' => 'kWh',
-                'factor_value' => 0.681, 'reference_url' => 'https://contoh.id/faktor',
+                'factor_value' => 0.681,
             ]),
             'sampah' => DB::table('emission_factors')->insertGetId([
                 'category_id' => $sampah, 'name' => 'Sampah organik', 'unit' => 'kg',
-                'factor_value' => 1, 'reference_url' => 'https://contoh.id/faktor',
+                'factor_value' => 1,
             ]),
             'arsip' => DB::table('emission_factors')->insertGetId([
                 'category_id' => $listrik, 'name' => 'Listrik lama', 'unit' => 'kWh',
-                'factor_value' => 0.9, 'reference_url' => 'https://contoh.id/faktor', 'is_active' => false,
+                'factor_value' => 0.9, 'is_active' => false,
             ]),
         ];
     }

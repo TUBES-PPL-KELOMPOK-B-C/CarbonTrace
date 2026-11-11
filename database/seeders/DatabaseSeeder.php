@@ -16,6 +16,9 @@ class DatabaseSeeder extends Seeder
             PencatatanAktivitasEmisiHarianSeeder221::class,
             TemplateAktivitasRutinSeeder221::class,
             ManajemenBankPertanyaanKuisSeeder221::class,
+            // Modul Target dan Pengingat (Alvin-022)
+            ManajemenTargetEmisiBulananSeeder022::class,
+            PengingatPencatatanHarianSeeder022::class,
         ]);
     }
 }

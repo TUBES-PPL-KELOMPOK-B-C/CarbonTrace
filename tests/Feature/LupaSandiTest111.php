@@ -16,6 +16,63 @@ class LupaSandiTest111 extends TestCase
 
     private const PESAN_TERKIRIM = 'Tautan untuk membuat kata sandi baru telah dikirim ke email Anda. Silakan periksa kotak masuk dan folder spam.';
 
+    public function test_mode_log_di_laptop_memberi_tautan_langsung_yang_bisa_dipakai(): void
+    {
+        $this->app['env'] = 'local';
+        config(['mail.default' => 'log', 'mail.mailers.log.channel' => 'null']);
+        $pengguna = User::factory()->create();
+
+        $tanggapan = $this->postJson(route('auth.api.lupa'), ['email' => $pengguna->email])
+            ->assertOk()
+            ->assertJsonPath('pesan', 'Mode pengembangan: email tidak dikirim. Silakan lanjutkan lewat tombol di bawah ini.');
+
+        $this->assertStringContainsString('/atur-ulang-sandi/', $tanggapan->json('tautan_pengembangan'));
+        $this->get($tanggapan->json('tautan_pengembangan'))->assertOk()->assertSee('Buat Kata Sandi Baru')->assertSee($pengguna->email);
+    }
+
+    public function test_di_luar_laptop_tautan_tidak_pernah_ditampilkan_walau_memakai_log(): void
+    {
+        config(['mail.default' => 'log', 'mail.mailers.log.channel' => 'null']);
+        $pengguna = User::factory()->create();
+
+        $this->postJson(route('auth.api.lupa'), ['email' => $pengguna->email])
+            ->assertOk()
+            ->assertJsonPath('pesan', self::PESAN_TERKIRIM)
+            ->assertJsonMissingPath('tautan_pengembangan');
+
+        $this->from(route('auth.lupa'));
+        $this->travel(2)->minutes();
+        $this->post(route('auth.kirim'), ['email' => $pengguna->email])->assertSessionMissing('tautan_lokal.0');
+        $this->assertNull(session('tautan_lokal'));
+    }
+
+    public function test_tombol_tautan_tampil_di_halaman_bila_ada(): void
+    {
+        $this->withSession(['status' => 'Mode pengembangan', 'tautan_lokal' => 'http://contoh.test/atur-ulang-sandi/abc'])
+            ->get(route('auth.lupa'))
+            ->assertSee('http://contoh.test/atur-ulang-sandi/abc');
+
+        $this->withSession(['status' => 'Terkirim', 'tautan_lokal' => null])
+            ->get(route('auth.lupa'))
+            ->assertDontSee('lp-auth__tautan-lokal');
+    }
+
+    public function test_server_email_gagal_memberi_pesan_rapi_dan_bisa_langsung_dicoba_lagi(): void
+    {
+        // Port tertutup: pengiriman SMTP benar-benar gagal, seperti App Password yang salah
+        config(['mail.default' => 'smtp', 'mail.mailers.smtp.host' => '127.0.0.1', 'mail.mailers.smtp.port' => 1, 'mail.mailers.smtp.timeout' => 2]);
+        $pengguna = User::factory()->create();
+
+        $this->from(route('auth.lupa'))
+            ->post(route('auth.kirim'), ['email' => $pengguna->email])
+            ->assertRedirect(route('auth.lupa'))
+            ->assertSessionHasErrors(['email' => 'Email pemulihan belum dapat dikirim. Silakan coba beberapa saat lagi.']);
+
+        $this->assertDatabaseMissing('password_reset_tokens', ['email' => $pengguna->email]);
+
+        $this->postJson(route('auth.api.lupa'), ['email' => $pengguna->email])->assertStatus(503);
+    }
+
     public function test_halaman_lupa_sandi_bisa_dibuka_dan_ditautkan_dari_halaman_masuk(): void
     {
         $this->get(route('auth.masuk'))->assertSee('Lupa kata sandi?')->assertSee(route('auth.lupa'));

@@ -1,0 +1,175 @@
+/* ==========================================================================
+   Modul Target dan Pengingat (Alvin-022): PBI-10 /target-emisi, PBI-11 /pengingat.
+   Token --ct-* dan komponen bersama dari app.css (Front-End Lead).
+   ========================================================================== */
+
+/* Komponen <x-panel-geser> dan <x-modal> menyembunyikan latarnya dengan kelas "hidden", tetapi
+   .ct-latar-belakang di app.css berada di luar layer Tailwind sehingga menimpa "hidden".
+   Diperbaiki di sini untuk halaman modul ini saja; perbaikan sebenarnya ada di app.css. */
+.ct-latar-belakang.hidden { display: none; }
+
+.tg-bahaya, .pg-bahaya { color: var(--ct-danger); }
+.tg-tombol-bahaya, .pg-tombol-bahaya { background: var(--ct-danger); color: var(--ct-text); }
+.tg-modal__teks, .pg-modal__teks { margin: 0; color: var(--ct-text-muted); }
+
+/* ---------- PBI-10 Target ---------- */
+.tg-kepala {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ct-s4);
+  margin-bottom: var(--ct-s5);
+}
+.tg-kepala__teks { max-width: 560px; margin: 0; color: var(--ct-text-muted); }
+
+/* cincin kemajuan: hijau di bawah 70 persen, kuning 70 sampai 100, merah di atas 100 */
+@property --nilai {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+.ct-cincin {
+  --warna: var(--ct-primary);
+  flex: none;
+  display: grid; place-items: center;
+  width: 240px; aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(var(--warna) calc(var(--nilai) * 1%), var(--ct-border) 0);
+  animation: tg-cincin-isi 1s ease-out;
+}
+.ct-cincin::after {
+  content: ''; grid-area: 1 / 1;
+  width: 76%; aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--ct-surface);
+}
+.ct-cincin__isi { grid-area: 1 / 1; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.tg-cincin--hampir { --warna: var(--ct-warning); }
+.tg-cincin--terlampaui { --warna: var(--ct-danger); }
+.tg-cincin__angka { font-size: 36px; font-weight: 800; line-height: 1.1; }
+.tg-cincin__ket { font-size: 13px; color: var(--ct-text-muted); }
+/* animasi dari nol ke posisi sebenarnya; dimatikan oleh aturan gerak dikurangi di beranda-022.css */
+@keyframes tg-cincin-isi { from { --nilai: 0; } }
+
+.tg-berjalan { display: flex; align-items: center; gap: var(--ct-s7); padding: var(--ct-s6); }
+.tg-rincian { display: flex; flex-direction: column; align-items: flex-start; gap: var(--ct-s3); min-width: 0; }
+.tg-rincian__label { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--ct-text-muted); }
+.tg-rincian__judul { margin: 0; font-size: 24px; font-weight: 800; }
+.tg-rincian__teks { margin: 0; font-size: 16px; }
+.tg-rincian__aksi, .tg-riwayat__aksi { display: flex; flex-wrap: wrap; gap: var(--ct-s2); margin-top: var(--ct-s2); }
+.tg-rincian__aksi .ct-tombol, .tg-riwayat__aksi .ct-tombol { height: 40px; font-size: 14px; }
+
+.tg-bagian { margin-top: var(--ct-s6); }
+.tg-bagian__judul { margin: 0 0 var(--ct-s3); font-size: 16px; font-weight: 700; }
+.tg-bagian__kosong { margin: 0; color: var(--ct-text-muted); }
+.tg-kisi { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ct-s4); }
+.tg-riwayat { display: flex; flex-direction: column; align-items: flex-start; gap: var(--ct-s2); }
+.tg-riwayat__periode { margin: 0; font-weight: 700; }
+.tg-riwayat__angka { margin: 0; font-size: 14px; color: var(--ct-text-muted); }
+
+/* formulir di panel geser */
+.tg-form, .pg-form { display: flex; flex-direction: column; gap: var(--ct-s5); }
+.tg-form__periode { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: var(--ct-s3); }
+.tg-form__periode legend { padding: 0; margin-bottom: var(--ct-s2); }
+.tg-pintasan { display: flex; flex-wrap: wrap; gap: var(--ct-s2); }
+.tg-pintasan .ct-tombol { height: 36px; padding: 0 var(--ct-s4); font-size: 14px; width: auto; }
+.tg-pintasan .ct-tombol[aria-pressed="true"] { border-color: var(--ct-primary); color: var(--ct-primary); }
+.tg-form__tanggal { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ct-s3); }
+.tg-form__tanggal .ct-isian { color-scheme: dark; }
+.tg-satuan { position: relative; }
+.tg-satuan .ct-isian { padding-right: 88px; }
+.tg-satuan span {
+  position: absolute; top: 50%; right: var(--ct-s4); translate: 0 -50%;
+  font-size: 14px; font-weight: 600; color: var(--ct-text-muted); pointer-events: none;
+}
+.tg-form__kirim, .pg-form__kirim { width: 100%; }
+[data-form-kunci] [aria-busy="true"] { opacity: .7; cursor: progress; }
+
+/* ---------- PBI-11 Pengingat ---------- */
+.pg-catatan { margin: 0 0 var(--ct-s5); color: var(--ct-text-muted); }
+.pg-kisi { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ct-s4); }
+.pg-kartu { display: flex; flex-direction: column; gap: var(--ct-s3); }
+.pg-kartu--mati .pg-kartu__jam { color: var(--ct-text-muted); }
+.pg-kartu__atas { display: flex; align-items: center; justify-content: space-between; gap: var(--ct-s3); }
+.pg-kartu__jam { margin: 0; font-size: 40px; font-weight: 800; line-height: 1; }
+.pg-kartu__jam span { font-size: 14px; font-weight: 600; color: var(--ct-text-muted); }
+.pg-kartu__status { margin: 0; font-size: 14px; color: var(--ct-text-muted); }
+.pg-kartu__aksi { display: flex; gap: var(--ct-s2); margin-top: auto; }
+.pg-kartu__aksi .ct-tombol { height: 40px; font-size: 14px; width: auto; }
+.pg-saklar { display: flex; align-items: center; }
+.pg-tersembunyi {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* kartu kosong bertanda tambah */
+.ct-kartu-tambah {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--ct-s2);
+  min-height: 180px;
+  border: 2px dashed var(--ct-border);
+  border-radius: var(--ct-r-card);
+  background: transparent;
+  font: inherit; font-weight: 600;
+  color: var(--ct-text-muted);
+  cursor: pointer;
+  transition: border-color .15s ease, color .15s ease;
+}
+.ct-kartu-tambah:hover { border-color: var(--ct-primary); color: var(--ct-primary); }
+.ct-kartu-tambah svg { width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+/* roda putar jam: dua kolom gulir yang berhenti tepat di satu angka */
+.ct-roda-jam {
+  position: relative;
+  display: flex; align-items: center; justify-content: center; gap: var(--ct-s2);
+  padding: var(--ct-s3);
+  border-radius: var(--ct-r-card);
+  background: var(--ct-surface);
+  border: 1px solid var(--ct-border);
+}
+.ct-roda-jam::before {
+  content: ''; position: absolute; left: var(--ct-s3); right: var(--ct-s3); top: 50%;
+  height: 44px; translate: 0 -50%;
+  border-radius: var(--ct-r-ctrl);
+  background: color-mix(in srgb, var(--ct-primary) 12%, transparent);
+  pointer-events: none;
+}
+.ct-roda-jam__kolom {
+  position: relative;
+  height: 132px; width: 72px;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  padding: 44px 0;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(transparent, var(--ct-bg) 30%, var(--ct-bg) 70%, transparent);
+  mask-image: linear-gradient(transparent, var(--ct-bg) 30%, var(--ct-bg) 70%, transparent);
+}
+.ct-roda-jam__kolom::-webkit-scrollbar { display: none; }
+.ct-roda-jam__butir {
+  display: block; width: 100%; height: 44px;
+  scroll-snap-align: center;
+  border: 0; background: none;
+  font: inherit; font-size: 24px; font-weight: 700;
+  color: var(--ct-text-muted);
+  cursor: pointer;
+}
+.ct-roda-jam__butir[aria-selected="true"] { color: var(--ct-text); }
+.ct-roda-jam__titik { font-size: 24px; font-weight: 800; }
+
+/* ---------- responsif ---------- */
+@media (max-width: 1024px) {
+  .tg-kisi, .pg-kisi { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* 768px: cincin mengecil dan pindah ke atas rincian */
+@media (max-width: 768px) {
+  .ct-cincin { width: 180px; }
+  .tg-berjalan { flex-direction: column; align-items: stretch; gap: var(--ct-s5); }
+  .tg-berjalan .ct-cincin { align-self: center; }
+}
+/* 375px: cincin 140px, teks pendamping dipendekkan, kartu satu kolom */
+@media (max-width: 560px) {
+  .ct-cincin { width: 140px; }
+  .tg-cincin__angka { font-size: 26px; }
+  .tg-panjang { display: none; }
+  .tg-berjalan { padding: var(--ct-s5); }
+  .tg-rincian__judul { font-size: 20px; }
+  .tg-kisi, .pg-kisi { grid-template-columns: 1fr; }
+  .tg-form__tanggal { grid-template-columns: 1fr; }
+  .tg-kepala .ct-tombol { width: 100%; }
+}

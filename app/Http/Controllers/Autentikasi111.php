@@ -12,11 +12,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Spatie\Permission\Models\Role;
 
 class Autentikasi111 extends Controller
 {
     private const PESAN_SALAH = 'Email atau kata sandi salah.';
     private const PESAN_NONAKTIF = 'Akun ini dinonaktifkan. Hubungi administrator.';
+    private const PERAN_BAWAAN = 'user';
     private const BATAS_GAGAL = 5;
     private const LAMA_KUNCI_DETIK = 60;
 
@@ -141,14 +143,22 @@ class Autentikasi111 extends Controller
     {
         $data = $request->validated();
 
-        // Satu transaksi supaya tidak ada akun setengah jadi.
-        // TODO: beri peran bawaan "pengguna" di transaksi ini setelah tabel roles (KF-04) ada
-        $pengguna = DB::transaction(fn () => User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'campus' => $data['campus'] ?? null,
-            'password' => $data['password'],
-        ]));
+        // Satu transaksi supaya tidak ada akun tanpa peran. Nama peran bawaan "user" mengikuti
+        // seeder Modul 2 (MasterDataEmisiStubSeeder); selama perannya belum dibuat, akun tetap jadi.
+        $pengguna = DB::transaction(function () use ($data) {
+            $pengguna = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'campus' => $data['campus'] ?? null,
+                'password' => $data['password'],
+            ]);
+
+            if (Role::where('name', self::PERAN_BAWAAN)->where('guard_name', 'web')->exists()) {
+                $pengguna->assignRole(self::PERAN_BAWAAN);
+            }
+
+            return $pengguna;
+        });
 
         Auth::login($pengguna);
         $request->session()->regenerate();

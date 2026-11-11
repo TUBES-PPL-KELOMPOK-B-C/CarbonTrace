@@ -41,6 +41,15 @@ class AutentikasiTest111 extends TestCase
         ]);
     }
 
+    public function test_pendaftaran_memberi_peran_bawaan_user_bila_perannya_sudah_ada(): void
+    {
+        \Spatie\Permission\Models\Role::create(['name' => 'user', 'guard_name' => 'web']);
+
+        $this->post(route('auth.simpan'), $this->dataDaftar())->assertRedirect(route('dashboard.index'));
+
+        $this->assertTrue(User::where('email', 'budi@contoh.com')->first()->hasRole('user'));
+    }
+
     public function test_pendaftaran_ditolak_jika_data_tidak_valid(): void
     {
         User::factory()->create(['email' => 'sudah@ada.id']);

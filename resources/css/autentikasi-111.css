@@ -78,6 +78,7 @@
   font-size: 14px; text-align: left;
   color: var(--ct-text);
 }
+.lp-auth__tautan-lokal { display: flex; width: 100%; margin-top: var(--ct-s3); }
 .lp-auth__galat a { font-weight: 700; color: var(--ct-primary); text-decoration: underline; }
 
 .lp-auth__form { display: flex; flex-direction: column; gap: var(--ct-s4); text-align: left; }

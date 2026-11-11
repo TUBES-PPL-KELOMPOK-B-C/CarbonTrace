@@ -9,20 +9,27 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 // KF-01 Lupa kata sandi: kirim tautan pemulihan ke email, lalu buat kata sandi baru lewat tautan itu.
 // Tautan berlaku 60 menit dan hanya bisa dipakai sekali (tokennya dihapus setelah dipakai).
 class LupaSandi111 extends Controller
 {
     private const PESAN_TERKIRIM = 'Tautan untuk membuat kata sandi baru telah dikirim ke email Anda. Silakan periksa kotak masuk dan folder spam.';
+    private const PESAN_MODE_LOG = 'Mode pengembangan: email tidak dikirim. Silakan lanjutkan lewat tombol di bawah ini.';
+    private const PESAN_GAGAL_KIRIM = 'Email pemulihan belum dapat dikirim. Silakan coba beberapa saat lagi.';
     private const PESAN_BELUM_TERDAFTAR = 'Email tersebut belum terdaftar di CarbonTrace. Silakan periksa kembali alamat email Anda atau daftar terlebih dahulu.';
     private const PESAN_NONAKTIF = 'Akun dengan email tersebut telah dinonaktifkan. Silakan hubungi administrator.';
     private const PESAN_TERLALU_SERING = 'Tautan pemulihan baru saja dikirim. Silakan tunggu satu menit sebelum meminta tautan baru.';
     private const PESAN_BERHASIL = 'Kata sandi berhasil diubah. Silakan masuk dengan kata sandi baru Anda.';
     private const PESAN_TAUTAN_SALAH = 'Tautan pemulihan tidak valid atau telah kedaluwarsa. Silakan minta tautan baru.';
+
+    // Tautan pemulihan dari email terakhir, untuk ditampilkan di halaman pada mode pengembangan.
+    private ?string $tautanPemulihan = null;
 
     public function tampilLupa(): View
     {
@@ -35,7 +42,8 @@ class LupaSandi111 extends Controller
             return back()->withInput($request->only('email'))->withErrors(['email' => $galat[0]]);
         }
 
-        return back()->withInput($request->only('email'))->with('status', self::PESAN_TERKIRIM);
+        return back()->withInput($request->only('email'))->with('status', $this->pesanTerkirim())
+            ->with('tautan_lokal', $this->tautanLokal());
     }
 
     public function tampilAtur(Request $request, string $token): View
@@ -64,7 +72,10 @@ class LupaSandi111 extends Controller
             return response()->json(['pesan' => $galat[0]], $galat[1]);
         }
 
-        return response()->json(['pesan' => self::PESAN_TERKIRIM]);
+        return response()->json(array_filter([
+            'pesan' => $this->pesanTerkirim(),
+            'tautan_pengembangan' => $this->tautanLokal(),
+        ]));
     }
 
     public function apiAtur(Request $request): JsonResponse
@@ -100,18 +111,50 @@ class LupaSandi111 extends Controller
             return [self::PESAN_NONAKTIF, 403];
         }
 
-        ResetPassword::toMailUsing(fn (User $pengguna, string $token) => (new MailMessage)
-            ->subject('Atur Ulang Kata Sandi CarbonTrace')
-            ->greeting('Yth. '.$pengguna->name.',')
-            ->line('Kami menerima permintaan untuk membuat kata sandi baru bagi akun CarbonTrace Anda.')
-            ->action('Buat Kata Sandi Baru', route('auth.atur.form', ['token' => $token, 'email' => $pengguna->email]))
-            ->line('Tautan ini berlaku selama 60 menit dan hanya dapat digunakan satu kali.')
-            ->line('Apabila Anda tidak merasa mengajukan permintaan ini, abaikan email ini. Kata sandi Anda tidak akan berubah.')
-            ->salutation('Hormat kami, Tim CarbonTrace'));
+        ResetPassword::toMailUsing(function (User $pengguna, string $token) {
+            $this->tautanPemulihan = route('auth.atur.form', ['token' => $token, 'email' => $pengguna->email]);
 
-        $status = Password::sendResetLink(['email' => $pengguna->email]);
+            return (new MailMessage)
+                ->subject('Atur Ulang Kata Sandi CarbonTrace')
+                ->greeting('Yth. '.$pengguna->name.',')
+                ->line('Kami menerima permintaan untuk membuat kata sandi baru bagi akun CarbonTrace Anda.')
+                ->action('Buat Kata Sandi Baru', $this->tautanPemulihan)
+                ->line('Tautan ini berlaku selama 60 menit dan hanya dapat digunakan satu kali.')
+                ->line('Apabila Anda tidak merasa mengajukan permintaan ini, abaikan email ini. Kata sandi Anda tidak akan berubah.')
+                ->salutation('Hormat kami, Tim CarbonTrace');
+        });
+
+        try {
+            $status = Password::sendResetLink(['email' => $pengguna->email]);
+        } catch (TransportExceptionInterface $e) {
+            // Mis. App Password salah atau server email tidak terjangkau. Token dihapus supaya
+            // pengguna bisa langsung mencoba lagi tanpa kena batas satu menit.
+            Log::error('Email pemulihan kata sandi gagal dikirim', ['galat' => $e->getMessage()]);
+            Password::deleteToken($pengguna);
+
+            return [self::PESAN_GAGAL_KIRIM, 503];
+        }
 
         return $status === Password::RESET_THROTTLED ? [self::PESAN_TERLALU_SERING, 429] : null;
+    }
+
+    // Selama MAIL_MAILER=log di laptop, email hanya ditulis ke log. Halaman tidak boleh mengatakan
+    // email sudah terkirim, dan tautannya ditampilkan supaya alurnya tetap bisa dijalankan.
+    private function modeLog(): bool
+    {
+        return app()->isLocal() && config('mail.default') === 'log';
+    }
+
+    private function pesanTerkirim(): string
+    {
+        return $this->modeLog() ? self::PESAN_MODE_LOG : self::PESAN_TERKIRIM;
+    }
+
+    // Tidak pernah berisi tautan di luar mode pengembangan: di server sungguhan, tautan pemulihan
+    // hanya boleh sampai lewat email pemilik akun.
+    private function tautanLokal(): ?string
+    {
+        return $this->modeLog() ? $this->tautanPemulihan : null;
     }
 
     // Mengembalikan null bila berhasil, atau pesan galat untuk pengguna.

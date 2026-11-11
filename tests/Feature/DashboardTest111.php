@@ -20,18 +20,18 @@ class DashboardTest111 extends TestCase
         Carbon::setTestNow('2026-11-15 10:00:00');
     }
 
-    // Tabel milik modul lain belum ada di repo, jadi tes membuat salinan skemanya sesuai README
-    // pemiliknya: activities (Hadi), targets (Alvin), point_logs (Man), emission_factors dan
-    // categories (Renaya), announcements (Tio).
+    // Tabel milik modul lain dibuat dari salinan skema README pemiliknya bila migrasinya belum
+    // ada di repo: targets (Alvin), point_logs (Man), announcements (Tio). Tabel activities,
+    // categories, dan emission_factors sudah dibuat migrasi Modul 2 (Hadi).
     private function siapkanTabel(): void
     {
-        Schema::create('categories', function (Blueprint $t) {
+        if (! Schema::hasTable('categories')) Schema::create('categories', function (Blueprint $t) {
             $t->id();
             $t->string('name');
             $t->string('base_unit');
             $t->boolean('is_active')->default(true);
         });
-        Schema::create('emission_factors', function (Blueprint $t) {
+        if (! Schema::hasTable('emission_factors')) Schema::create('emission_factors', function (Blueprint $t) {
             $t->id();
             $t->foreignId('category_id');
             $t->string('name');
@@ -39,7 +39,7 @@ class DashboardTest111 extends TestCase
             $t->decimal('factor_value', 12, 4);
             $t->boolean('is_active')->default(true);
         });
-        Schema::create('activities', function (Blueprint $t) {
+        if (! Schema::hasTable('activities')) Schema::create('activities', function (Blueprint $t) {
             $t->id();
             $t->foreignId('user_id');
             $t->foreignId('emission_factor_id');
@@ -49,7 +49,7 @@ class DashboardTest111 extends TestCase
             $t->string('note')->default('');
             $t->timestamps();
         });
-        Schema::create('targets', function (Blueprint $t) {
+        if (! Schema::hasTable('targets')) Schema::create('targets', function (Blueprint $t) {
             $t->id();
             $t->foreignId('user_id');
             $t->string('period_start');
@@ -57,14 +57,14 @@ class DashboardTest111 extends TestCase
             $t->decimal('emission_limit', 12, 4);
             $t->timestamps();
         });
-        Schema::create('point_logs', function (Blueprint $t) {
+        if (! Schema::hasTable('point_logs')) Schema::create('point_logs', function (Blueprint $t) {
             $t->id();
             $t->foreignId('user_id');
             $t->integer('points')->default(0);
             $t->string('reason');
             $t->timestamp('created_at')->nullable();
         });
-        Schema::create('announcements', function (Blueprint $t) {
+        if (! Schema::hasTable('announcements')) Schema::create('announcements', function (Blueprint $t) {
             $t->id();
             $t->foreignId('user_id');
             $t->string('title');
@@ -74,7 +74,7 @@ class DashboardTest111 extends TestCase
             $t->timestamps();
         });
 
-        $listrik = DB::table('categories')->insertGetId(['name' => 'Listrik', 'base_unit' => 'kWh']);
+        $listrik = DB::table('categories')->insertGetId(['name' => 'Listrik']);
         DB::table('emission_factors')->insert(['id' => 1, 'category_id' => $listrik, 'name' => 'Listrik PLN', 'unit' => 'kWh', 'factor_value' => 0.681]);
     }
 
