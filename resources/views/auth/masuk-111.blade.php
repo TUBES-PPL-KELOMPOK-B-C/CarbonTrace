@@ -29,7 +29,15 @@
 
             @if (session('galat_masuk'))
                 <div class="lp-auth__galat" role="alert" tabindex="-1" data-galat-fokus>
-                    {{ session('galat_masuk') }}
+                    <p style="margin: 0;">{{ session('galat_masuk') }}</p>
+                    @if (str_contains(session('galat_masuk'), 'administrator') || str_contains(session('galat_masuk'), 'dinonaktifkan'))
+                        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(244, 63, 94, 0.4); font-size: 13px;">
+                            <a href="mailto:admin@carbontrace.id?subject=Permohonan%20Aktivasi%20Kembali%20Akun%20CarbonTrace&body=Halo%20Admin%20CarbonTrace,%20mohon%20bantuannya%20untuk%20mengaktifkan%20kembali%20akun%20saya%20dengan%20email:%20{{ old('email') }}" style="color: #fff; text-decoration: underline; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                Hubungi Administrator (admin@carbontrace.id)
+                            </a>
+                        </div>
+                    @endif
                 </div>
             @endif
 

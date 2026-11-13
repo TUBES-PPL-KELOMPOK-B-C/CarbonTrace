@@ -58,4 +58,9 @@ class User314 extends Authenticatable
     {
         return $this->hasOne(UserSetting314::class, 'user_id');
     }
+
+    public function userSetting()
+    {
+        return $this->hasOne(UserSetting314::class, 'user_id');
+    }
 }

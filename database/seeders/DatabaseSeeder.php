@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ManajemenProfilPenggunaSeeder314::class,
+            PengaturanKonsumsiRumahTanggaSeeder314::class,
             MasterDataEmisiStubSeeder::class,
             PencatatanAktivitasEmisiHarianSeeder221::class,
             TemplateAktivitasRutinSeeder221::class,
