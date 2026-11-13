@@ -34,5 +34,6 @@ class AppServiceProvider extends ServiceProvider
         // Pemetaan Policy Modul 1 (Rosi-314)
         Gate::policy(\App\Models\User314::class, \App\Policies\ManajemenProfilPenggunaPolicy314::class);
         Gate::policy(\App\Models\UserSetting314::class, \App\Policies\PengaturanKonsumsiRumahTanggaPolicy314::class);
+        Gate::define('lihat-papan-peringkat', [\App\Policies\PapanPeringkatKomunitasPolicy314::class, 'viewAny']);
     }
 }
