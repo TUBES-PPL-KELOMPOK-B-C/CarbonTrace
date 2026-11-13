@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            ManajemenProfilPenggunaSeeder314::class,
             MasterDataEmisiStubSeeder::class,
             PencatatanAktivitasEmisiHarianSeeder221::class,
             TemplateAktivitasRutinSeeder221::class,

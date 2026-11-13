@@ -19,6 +19,7 @@ export default defineConfig({
                 'resources/css/dashboard-111.css',
                 'resources/css/target-pengingat-022.css',
                 'resources/js/target-pengingat-022.js',
+                'resources/css/profil-314.css',
             ],
             refresh: true,
             fonts: [

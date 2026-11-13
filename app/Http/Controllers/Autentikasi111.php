@@ -146,16 +146,18 @@ class Autentikasi111 extends Controller
         // Satu transaksi supaya tidak ada akun tanpa peran. Nama peran bawaan "user" mengikuti
         // seeder Modul 2 (MasterDataEmisiStubSeeder); selama perannya belum dibuat, akun tetap jadi.
         $pengguna = DB::transaction(function () use ($data) {
+            $role = Role::whereIn('name', ['user', 'pengguna'])->where('guard_name', 'web')->first()
+                ?? Role::firstOrCreate(['name' => 'pengguna', 'guard_name' => 'web']);
+
             $pengguna = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'campus' => $data['campus'] ?? null,
                 'password' => $data['password'],
+                'role_id' => $role->id,
             ]);
 
-            if (Role::where('name', self::PERAN_BAWAAN)->where('guard_name', 'web')->exists()) {
-                $pengguna->assignRole(self::PERAN_BAWAAN);
-            }
+            $pengguna->assignRole($role);
 
             return $pengguna;
         });

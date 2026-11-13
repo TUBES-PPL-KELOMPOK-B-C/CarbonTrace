@@ -8,8 +8,14 @@ require __DIR__.'/modul-kalkulator-publik-111.php';
 require __DIR__.'/modul-dashboard-111.php';
 require __DIR__.'/modul-target-pengingat-dan-laporan-022.php';
 require __DIR__.'/modul-edukasi-dan-komunitas-365.php';
+require __DIR__.'/modul-pencatatan-aktivitas-221.php';
+require __DIR__.'/modul-akun-dan-administrasi-pengguna-314.php';
 
 Route::view('/', 'publik.beranda')->name('beranda');
+
+// Redirect helper jika user/browser mengakses /login atau /register
+Route::redirect('/login', '/masuk')->name('login');
+Route::redirect('/register', '/daftar')->name('register');
 
 // ===========================================================================
 // RUTE DEV-ONLY: Hanya untuk preview lokal - HAPUS sebelum push ke production
@@ -17,16 +23,20 @@ Route::view('/', 'publik.beranda')->name('beranda');
 if (app()->environment('local')) {
     // Login sebagai pengguna biasa
     Route::get('/dev-login-pengguna', function () {
-        $user = \App\Models\User::where('email', 'pengguna@carbontrace.id')->first();
-        Auth::login($user);
-        return redirect('/aktivitas')->with('sukses', 'Login dev sebagai pengguna.');
+        $user = \App\Models\User314::where('email', 'pengguna@carbontrace.id')->first();
+        if ($user) {
+            Auth::login($user);
+        }
+        return redirect('/dashboard')->with('sukses', 'Login dev sebagai pengguna.');
     })->name('dev.login.pengguna');
 
     // Login sebagai admin
     Route::get('/dev-login-admin', function () {
-        $user = \App\Models\User::where('email', 'admin@carbontrace.id')->first();
-        Auth::login($user);
-        return redirect('/admin/bank-kuis')->with('sukses', 'Login dev sebagai admin.');
+        $user = \App\Models\User314::where('email', 'admin@carbontrace.id')->first();
+        if ($user) {
+            Auth::login($user);
+        }
+        return redirect('/dashboard')->with('sukses', 'Login dev sebagai admin.');
     })->name('dev.login.admin');
 
     // Logout
@@ -35,6 +45,3 @@ if (app()->environment('local')) {
         return redirect('/');
     })->name('dev.logout');
 }
-
-// Modul 2: Pencatatan Aktivitas (Hadi Dwi Pranoto - 102022400221)
-require __DIR__ . '/modul-pencatatan-aktivitas-221.php';

@@ -30,5 +30,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Activitie221::class, PencatatanAktivitasEmisiHarianPolicy221::class);
         Gate::policy(ActivityTemplate221::class, TemplateAktivitasRutinPolicy221::class);
         Gate::policy(QuizQuestion221::class, ManajemenBankPertanyaanKuisPolicy221::class);
+
+        // Pemetaan Policy Modul 1 (Rosi-314)
+        Gate::policy(\App\Models\User314::class, \App\Policies\ManajemenProfilPenggunaPolicy314::class);
     }
 }

@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\EmissionFactor;
-use App\Models\User;
+use App\Models\User314;
 use App\Models\UserSetting;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -15,18 +15,25 @@ class MasterDataEmisiStubSeeder extends Seeder
     public function run(): void
     {
         // 1. Buat Roles
-        $roleUser = Role::firstOrCreate(['name' => 'user']);
-        $roleAdmin = Role::firstOrCreate(['name' => 'admin']);
+        $roleUser = Role::firstOrCreate(['name' => 'pengguna', 'guard_name' => 'web']);
+        $roleAdmin = Role::firstOrCreate(['name' => 'administrator', 'guard_name' => 'web']);
+        $roleUserLegacy = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+        $roleAdminLegacy = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
 
         // 2. Buat Pengguna Uji (User & Admin)
-        $user = User::firstOrCreate(
+        $user = User314::firstOrCreate(
             ['email' => 'pengguna@carbontrace.id'],
             [
                 'name' => 'Hadi Dwi Pranoto',
                 'password' => Hash::make('password'),
+                'role_id' => $roleUser->id,
+                'campus' => 'Telkom University',
+                'study_program' => 'S1 Informatika',
+                'is_active' => true,
             ]
         );
         $user->assignRole($roleUser);
+        $user->assignRole($roleUserLegacy);
 
         // Pengaturan rumah tangga (household_size = 2 untuk pembagian listrik)
         UserSetting::firstOrCreate(
@@ -34,14 +41,19 @@ class MasterDataEmisiStubSeeder extends Seeder
             ['household_size' => 2]
         );
 
-        $admin = User::firstOrCreate(
+        $admin = User314::firstOrCreate(
             ['email' => 'admin@carbontrace.id'],
             [
                 'name' => 'Administrator CarbonTrace',
                 'password' => Hash::make('password'),
+                'role_id' => $roleAdmin->id,
+                'campus' => 'Telkom University',
+                'study_program' => 'S1 Informatika',
+                'is_active' => true,
             ]
         );
         $admin->assignRole($roleAdmin);
+        $admin->assignRole($roleAdminLegacy);
 
         // 3. Kategori Emisi
         $catTransport = Category::firstOrCreate(['code' => 'transportasi'], [

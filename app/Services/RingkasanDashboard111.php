@@ -105,8 +105,9 @@ class RingkasanDashboard111
     // kalau belum, jumlah dari point_logs, kalau belum juga, nol.
     private function poin(User $pengguna): int
     {
-        if (array_key_exists('points', $pengguna->getAttributes())) {
-            return (int) $pengguna->getAttribute('points');
+        $poinUser = (int) $pengguna->getAttribute('points');
+        if ($poinUser > 0) {
+            return $poinUser;
         }
 
         return $this->ada('point_logs')
