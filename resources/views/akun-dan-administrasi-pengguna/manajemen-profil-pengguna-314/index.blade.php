@@ -3,7 +3,7 @@
 @section('judul', 'Profil')
 
 @push('aset')
-    @vite(['resources/css/profil-314.css'])
+    @vite(['resources/css/profil-314.css', 'resources/css/rumah-tangga-314.css'])
 @endpush
 
 @section('isi')
@@ -60,37 +60,11 @@
                     </x-tombol>
                 </div>
             </x-kartu>
-
-            {{-- Kartu Ringkasan Rumah Tangga (PBI-02 Relasi) --}}
-            <x-kartu judul="Konsumsi Rumah Tangga" subjudul="Dasar pembagi emisi listrik harian">
-                @php
-                    $setting = $user->userSetting;
-                @endphp
-                @if ($setting)
-                    <div style="display: flex; flex-direction: column; gap: var(--ct-s2); font-size: 14px;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: var(--ct-text-muted);">Penghuni:</span>
-                            <strong>{{ $setting->household_size }} orang</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: var(--ct-text-muted);">Daya Listrik:</span>
-                            <strong>{{ number_format($setting->power_watt, 0, ',', '.') }} Watt</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: var(--ct-text-muted);">Kendaraan:</span>
-                            <strong style="text-transform: capitalize;">{{ $setting->vehicle_ownership }}</strong>
-                        </div>
-                    </div>
-                @else
-                    <p style="font-size: 13px; color: var(--ct-text-muted); margin: 0 0 var(--ct-s3);">
-                        Belum mengatur konsumsi rumah tangga. Emisi listrik saat ini dihitung perorangan.
-                    </p>
-                @endif
-            </x-kartu>
         </aside>
 
-        {{-- Kolom Kanan: Formulir Pembaruan Profil --}}
-        <main>
+        {{-- Kolom Kanan: Formulir Pembaruan Profil & Kartu Pengaturan Rumah Tangga --}}
+        <main style="display: flex; flex-direction: column; gap: var(--ct-s5);">
+            {{-- Kartu 1: Informasi Profil --}}
             <x-kartu judul="Informasi Profil" subjudul="Perbarui data pribadi dan identitas civitas akademikamu.">
                 <form method="POST" action="{{ route('profil.update') }}" enctype="multipart/form-data" class="pr-formulir" id="form-profil">
                     @csrf
@@ -144,8 +118,151 @@
                     </div>
                 </form>
             </x-kartu>
+
+            {{-- Kartu 2: Pengaturan Konsumsi Rumah Tangga (PBI-02) di Sisi Kanan --}}
+            @php
+                $setting = $user->userSetting;
+            @endphp
+            <x-kartu judul="Pengaturan Konsumsi Rumah Tangga" subjudul="Dasar pembagi emisi listrik PLN dan profil kepemilikan mobilitasmu.">
+                @if ($setting)
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--ct-s4); margin-bottom: var(--ct-s4);">
+                        <div style="background: var(--ct-surface-raised); border: 1px solid var(--ct-border); border-radius: var(--ct-r-ctrl); padding: var(--ct-s4);">
+                            <div style="font-size: 13px; color: var(--ct-text-muted); margin-bottom: 4px;">Jumlah Penghuni:</div>
+                            <div style="font-size: 20px; font-weight: 800; color: var(--ct-primary); display: flex; align-items: baseline; gap: 6px;">
+                                {{ $setting->household_size }} orang
+                                <span class="ct-pelat ct-pelat--aman" style="font-size: 11px; font-weight: 600;">
+                                    Beban {{ number_format(100 / max(1, $setting->household_size), 1) }}%
+                                </span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--ct-text-muted); margin-top: 4px;">Emisi listrik rumah dibagi {{ $setting->household_size }}</div>
+                        </div>
+
+                        <div style="background: var(--ct-surface-raised); border: 1px solid var(--ct-border); border-radius: var(--ct-r-ctrl); padding: var(--ct-s4);">
+                            <div style="font-size: 13px; color: var(--ct-text-muted); margin-bottom: 4px;">Daya Listrik Rumah:</div>
+                            <div style="font-size: 20px; font-weight: 800; color: var(--ct-accent);">
+                                {{ number_format($setting->power_watt, 0, ',', '.') }} <span style="font-size: 14px; font-weight: 600; color: var(--ct-text);">Watt</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--ct-text-muted); margin-top: 4px;">Kapasitas meteran PLN terpasang</div>
+                        </div>
+
+                        <div style="background: var(--ct-surface-raised); border: 1px solid var(--ct-border); border-radius: var(--ct-r-ctrl); padding: var(--ct-s4);">
+                            <div style="font-size: 13px; color: var(--ct-text-muted); margin-bottom: 4px;">Aset Kendaraan:</div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--ct-text); text-transform: capitalize; margin-top: 2px;">
+                                {{ $setting->vehicle_ownership }}
+                            </div>
+                            <div style="font-size: 12px; color: var(--ct-text-muted); margin-top: 4px;">Profil kepemilikan keluarga</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--ct-s3); padding-top: var(--ct-s3); border-top: 1px solid var(--ct-border);">
+                        <span style="font-size: 13px; color: var(--ct-text-muted);">
+                            * Perubahan berlaku untuk pencatatan emisi berikutnya.
+                        </span>
+                        <div style="display: flex; gap: var(--ct-s3);">
+                            <x-tombol tipe="button" varian="utama" onclick="bukaModal('modal-rumah-tangga')">
+                                Ubah Data Rumah Tangga (Pop-up)
+                            </x-tombol>
+                            <x-tombol href="{{ route('rumah.index') }}" varian="sekunder">
+                                Halaman Penuh
+                            </x-tombol>
+                        </div>
+                    </div>
+                @else
+                    <div class="rt-ajakan-kosong" style="margin-bottom: var(--ct-s4);">
+                        <div>
+                            <h4 style="margin: 0 0 4px; font-size: 15px; font-weight: 700; color: var(--ct-text);">
+                                Isi data rumah tanggamu agar pembagian emisi listrik akurat
+                            </h4>
+                            <p style="margin: 0; font-size: 13px; color: var(--ct-text-muted);">
+                                Rumah tangga dengan 4 penghuni membagi beban emisi listrik menjadi 25% per orang.
+                            </p>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: var(--ct-s3);">
+                        <x-tombol tipe="button" varian="utama" onclick="bukaModal('modal-rumah-tangga')">
+                            Atur Data Rumah Tangga
+                        </x-tombol>
+                    </div>
+                @endif
+            </x-kartu>
         </main>
     </div>
+
+    {{-- Modal Pop-Up Ubah Data Rumah Tangga (PBI-02) --}}
+    <x-modal id="modal-rumah-tangga" judul="Pengaturan Konsumsi Rumah Tangga">
+        <form method="POST" action="{{ route('rumah.upsert') }}" id="form-modal-rumah">
+            @csrf
+            @method('PUT')
+
+            <p style="color: var(--ct-text-muted); font-size: 13px; margin-bottom: var(--ct-s4); line-height: 1.5;">
+                Ubah data rumah tangga Anda di bawah ini lalu klik <strong>Simpan Pengaturan</strong> untuk langsung memperbarui data tanpa perlu menghapus data lama.
+            </p>
+
+            <div class="ct-isian-grup" style="margin-bottom: var(--ct-s4);">
+                <label for="modal_household_size" class="ct-label">Jumlah Penghuni Rumah (1 - 20 orang)</label>
+                <div class="rt-penggeser-baris">
+                    <input type="range"
+                           id="modal_household_size"
+                           name="household_size"
+                           min="1"
+                           max="20"
+                           step="1"
+                           value="{{ old('household_size', $setting->household_size ?? 1) }}"
+                           class="ct-penggeser"
+                           oninput="document.getElementById('modal-angka-penghuni').textContent = this.value + ' orang'">
+                    <span class="rt-penggeser-angka" id="modal-angka-penghuni" style="font-size: 15px; min-width: 80px;">
+                        {{ old('household_size', $setting->household_size ?? 1) }} orang
+                    </span>
+                </div>
+            </div>
+
+            <div class="ct-isian-grup" style="margin-bottom: var(--ct-s4);">
+                <label for="modal_power_watt" class="ct-label">Daya Listrik Rumah Terpasang (PLN)</label>
+                <div class="ct-isian-satuan">
+                    <input type="number"
+                           id="modal_power_watt"
+                           name="power_watt"
+                           min="450"
+                           max="50000"
+                           step="50"
+                           value="{{ old('power_watt', $setting->power_watt ?? 900) }}"
+                           class="ct-isian"
+                           required>
+                    <span>watt</span>
+                </div>
+            </div>
+
+            <div class="ct-isian-grup" style="margin-bottom: var(--ct-s5);">
+                <span class="ct-label">Kepemilikan Kendaraan Rumah Tangga</span>
+                <div class="rt-kartu-pilihan-kisi" style="grid-template-columns: repeat(2, 1fr);">
+                    @php
+                        $opsiModal = [
+                            'tidak ada' => 'Tidak Ada',
+                            'motor' => 'Sepeda Motor',
+                            'mobil' => 'Mobil',
+                            'keduanya' => 'Keduanya',
+                        ];
+                        $terpilihModal = old('vehicle_ownership', $setting->vehicle_ownership ?? 'tidak ada');
+                    @endphp
+                    @foreach ($opsiModal as $kunci => $label)
+                        <label class="ct-pilihan-kartu" style="padding: var(--ct-s3);">
+                            <input type="radio" name="vehicle_ownership" value="{{ $kunci }}" @checked($terpilihModal === $kunci) required>
+                            <span class="ct-pilihan-kartu__label" style="font-size: 13px;">{{ $label }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: var(--ct-s3); border-top: 1px solid var(--ct-border); padding-top: var(--ct-s4);">
+                <x-tombol tipe="button" varian="sekunder" onclick="tutupModal('modal-rumah-tangga')">
+                    Batal
+                </x-tombol>
+                <x-tombol tipe="submit" varian="utama">
+                    Simpan Pengaturan
+                </x-tombol>
+            </div>
+        </form>
+    </x-modal>
 
     {{-- Modal Ubah Kata Sandi --}}
     <x-modal id="modal-sandi" judul="Ubah Kata Sandi">
@@ -220,6 +337,7 @@
             if (e.key === 'Escape') {
                 tutupModal('modal-sandi');
                 tutupModal('modal-nonaktifkan');
+                tutupModal('modal-rumah-tangga');
             }
         });
 

@@ -58,4 +58,21 @@ class User314 extends Authenticatable
     {
         return $this->hasOne(UserSetting314::class, 'user_id');
     }
+
+    public function userSetting()
+    {
+        return $this->hasOne(UserSetting314::class, 'user_id');
+    }
+
+    // Relasi ke riwayat poin (PBI-20)
+    public function pointLogs()
+    {
+        return $this->hasMany(PointLog314::class, 'user_id');
+    }
+
+    // Relasi ke keikutsertaan tantangan (PBI-20)
+    public function challengeUsers()
+    {
+        return $this->hasMany(ChallengeUser314::class, 'user_id');
+    }
 }
