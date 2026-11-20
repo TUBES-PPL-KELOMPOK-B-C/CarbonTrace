@@ -152,6 +152,29 @@
 .ct-roda-jam__butir[aria-selected="true"] { color: var(--ct-text); }
 .ct-roda-jam__titik { font-size: 24px; font-weight: 800; }
 
+/* ---------- keadaan memuat dan gagal ---------- */
+/* atribut hidden tetap menang atas display:grid/flex milik kelas modul ini */
+.pg-kisi[hidden], .tg-pelat-isi[hidden], .tg-gagal[hidden], .tg-rincian__teks[hidden] { display: none; }
+
+/* PBI-10: selama angka dimuat, cincin menjadi kerangka yang berputar pelan */
+.tg-berjalan--memuat .ct-cincin {
+  background: conic-gradient(var(--ct-surface-raised) 0 25%, var(--ct-border) 0);
+  animation: tg-cincin-putar 1.6s linear infinite;
+}
+.tg-berjalan--memuat .ct-cincin__isi { visibility: hidden; }
+.tg-berjalan--memuat .tg-rincian__teks { color: var(--ct-text-muted); }
+@keyframes tg-cincin-putar { to { rotate: 1turn; } }
+
+.tg-gagal { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ct-s2); margin: 0; color: var(--ct-danger); }
+.tg-gagal .ct-tombol { width: auto; height: 32px; padding: 0 var(--ct-s3); }
+
+/* PBI-11: kartu kerangka seukuran kartu pengingat */
+.pg-kerangka { display: flex; flex-direction: column; gap: var(--ct-s3); min-height: 180px; }
+.pg-kerangka .ct-kerangka { display: block; height: 16px; }
+.pg-kerangka .ct-kerangka:first-child { width: 55%; height: 40px; }
+.pg-kerangka .ct-kerangka:nth-child(2) { width: 40%; }
+.pg-kerangka .ct-kerangka:last-child { width: 70%; height: 36px; margin-top: auto; }
+
 /* ---------- responsif ---------- */
 @media (max-width: 1024px) {
   .tg-kisi, .pg-kisi { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -81,6 +81,28 @@ class PengingatPencatatanHarianTest022 extends TestCase
         $this->get(route('pengingat.index'))->assertDontSee('Tambah pengingat');
     }
 
+    public function test_paling_banyak_tiga_kartu_walau_ada_yang_nonaktif(): void
+    {
+        $this->pengingat('07:00');
+        $this->pengingat('12:00');
+        $this->pengingat('20:00', aktif: false);
+
+        $this->actingAs($this->pengguna)->post(route('pengingat.store'), ['remind_time' => '21:00'])
+            ->assertSessionHasErrors(['remind_time' => 'Maksimal tiga pengingat. Hapus pengingat yang tidak dipakai untuk menambah yang baru.']);
+
+        $this->get(route('pengingat.index'))->assertDontSee('Tambah pengingat');
+    }
+
+    public function test_halaman_menyediakan_tiga_kartu_kerangka_untuk_keadaan_memuat(): void
+    {
+        $this->pengingat('07:30');
+
+        $this->actingAs($this->pengguna)->get(route('pengingat.index'))
+            ->assertSee('data-kerangka-pengingat', false)
+            ->assertSee('aria-label="Memuat pengingat"', false);
+        $this->assertSame(3, substr_count($this->get(route('pengingat.index'))->getContent(), 'pg-kerangka"'));
+    }
+
     public function test_menyalakan_pengingat_keempat_lewat_saklar_juga_ditolak(): void
     {
         foreach (['07:00', '12:00', '20:00'] as $jam) {

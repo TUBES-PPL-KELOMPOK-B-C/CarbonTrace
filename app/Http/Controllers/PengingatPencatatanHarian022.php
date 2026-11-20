@@ -18,7 +18,7 @@ class PengingatPencatatanHarian022 extends Controller
 
         return view('target-pengingat-dan-laporan.pengingat-pencatatan-harian-022.index', [
             'pengingat' => $pengingat,
-            'bisaTambah' => $pengingat->where('is_active', true)->count() < SimpanPengingatPencatatanHarian022::MAKS_AKTIF,
+            'bisaTambah' => $pengingat->count() < SimpanPengingatPencatatanHarian022::MAKS_AKTIF,
         ]);
     }
 

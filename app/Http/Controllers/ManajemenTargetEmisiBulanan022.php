@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Events\PemakaianTargetBerubah022;
 use App\Http\Requests\SimpanManajemenTargetEmisiBulanan022;
 use App\Models\Target022;
+use App\Models\User;
+use App\Rules\PeriodeTidakTumpangTindih022;
 use App\Services\RingkasanTarget022;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
@@ -28,21 +31,47 @@ class ManajemenTargetEmisiBulanan022 extends Controller
         $akanDatang = $semua->filter(fn ($t) => $t->period_start > $hariIni)->sortBy('period_start')->values();
         $riwayat = $semua->filter(fn ($t) => $t->period_end < $hariIni)->values();
 
+        // Seluruh target diringkas dengan satu kueri ke tabel activities, berapa pun jumlahnya.
+        $ringkas = $this->ringkasan->ringkasBanyak($semua);
+
         return view('target-pengingat-dan-laporan.manajemen-target-emisi-bulanan-022.index', [
             'berjalan' => $berjalan,
-            'ringkasanBerjalan' => $berjalan ? $this->ringkasan->ringkas($berjalan) : null,
-            'akanDatang' => $akanDatang->map(fn ($t) => [$t, $this->ringkasan->ringkas($t)]),
-            'riwayat' => $riwayat->map(fn ($t) => [$t, $this->ringkasan->ringkas($t)]),
+            'ringkasanBerjalan' => $berjalan ? $ringkas[$berjalan->id] : null,
+            'akanDatang' => $akanDatang->map(fn ($t) => [$t, $ringkas[$t->id]]),
+            'riwayat' => $riwayat->map(fn ($t) => [$t, $ringkas[$t->id]]),
             'saran' => $berjalan ? null : $this->ringkasan->saranBatas($pengguna),
         ]);
     }
 
     public function store(SimpanManajemenTargetEmisiBulanan022 $request): RedirectResponse
     {
-        $target = Target022::create($request->validated() + ['user_id' => $request->user()->id]);
+        $target = $this->simpanTanpaBentrok($request, fn (array $data) => Target022::create($data + ['user_id' => $request->user()->id]));
+
+        if (! $target) {
+            return back()->withInput()->withErrors(['period_start' => PeriodeTidakTumpangTindih022::PESAN]);
+        }
+
         PemakaianTargetBerubah022::dispatch($target, $this->ringkasan->ringkas($target));
 
         return redirect()->route('target.index')->with('sukses', 'Target ditetapkan.');
+    }
+
+    // Validasi sudah menolak periode bertabrakan, tetapi dua kiriman di detik yang sama bisa sama-sama
+    // lolos. Karena itu penyimpanan diulang-periksa di dalam transaksi yang mengunci baris pengguna,
+    // sehingga kiriman kedua menunggu yang pertama selesai. Null berarti periode ternyata bertabrakan.
+    private function simpanTanpaBentrok(SimpanManajemenTargetEmisiBulanan022 $request, callable $simpan, ?Target022 $kecuali = null): ?Target022
+    {
+        $data = $request->validated();
+
+        return DB::transaction(function () use ($request, $data, $simpan, $kecuali) {
+            User::whereKey($request->user()->id)->lockForUpdate()->first();
+
+            if (PeriodeTidakTumpangTindih022::bentrok($request->user()->id, $data['period_start'], $data['period_end'], $kecuali?->id)) {
+                return null;
+            }
+
+            return $simpan($data);
+        });
     }
 
     public function update(SimpanManajemenTargetEmisiBulanan022 $request, Target022 $target): RedirectResponse
@@ -54,7 +83,12 @@ class ManajemenTargetEmisiBulanan022 extends Controller
             return redirect()->route('target.index')->with('galat', 'Target yang periodenya sudah berakhir tidak bisa diubah.');
         }
 
-        $target->update($request->validated());
+        $tersimpan = $this->simpanTanpaBentrok($request, fn (array $data) => tap($target)->update($data), $target);
+
+        if (! $tersimpan) {
+            return back()->withInput()->withErrors(['period_start' => PeriodeTidakTumpangTindih022::PESAN]);
+        }
+
         PemakaianTargetBerubah022::dispatch($target, $this->ringkasan->ringkas($target));
 
         return redirect()->route('target.index')->with('sukses', 'Target diperbarui.');

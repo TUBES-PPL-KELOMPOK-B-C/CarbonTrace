@@ -1,11 +1,42 @@
-// Modul Target dan Pengingat (Alvin-022): buka panel geser dan modal bersama, pintasan periode,
-// tombol kirim terkunci, saklar pengingat, dan roda putar jam.
+// Modul Target dan Pengingat (Alvin-022): buka panel geser dan modal bersama, kartu target berjalan
+// dari API, pintasan periode, tombol kirim terkunci, saklar pengingat, dan roda putar jam.
+
+// Fokus: selama panel atau modal terbuka, Tab berputar di dalamnya; setelah ditutup, fokus kembali
+// ke tombol yang membukanya.
+let pembuka = null;
+const bisaFokus = 'a[href], button:not([disabled]), input:not([type="hidden"]):not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+
+document.querySelectorAll('.ct-latar-belakang').forEach((latar) => {
+    new MutationObserver(() => {
+        if (latar.classList.contains('hidden') && pembuka) {
+            pembuka.focus();
+            pembuka = null;
+        }
+    }).observe(latar, { attributes: true, attributeFilter: ['class'] });
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    const terbuka = document.querySelector('.ct-latar-belakang:not(.hidden)');
+    if (!terbuka) return;
+    const daftar = [...terbuka.querySelectorAll(bisaFokus)].filter((el) => el.offsetParent !== null);
+    if (!daftar.length) return;
+    const [awal, akhir] = [daftar[0], daftar[daftar.length - 1]];
+    if (e.shiftKey && (document.activeElement === awal || !terbuka.contains(document.activeElement))) {
+        e.preventDefault();
+        akhir.focus();
+    } else if (!e.shiftKey && (document.activeElement === akhir || !terbuka.contains(document.activeElement))) {
+        e.preventDefault();
+        awal.focus();
+    }
+});
 
 // Panel geser <x-panel-geser>: latar dimunculkan, panel digeser masuk
 const bukaPanel = (id) => {
     const latar = document.getElementById(`${id}-backdrop`);
     const panel = document.getElementById(id);
     if (!latar || !panel) return;
+    pembuka = document.activeElement;
     latar.classList.remove('hidden');
     requestAnimationFrame(() => panel.classList.remove('translate-x-full'));
     panel.querySelector('input:not([type="hidden"]), select')?.focus({ preventScroll: true });
@@ -28,20 +59,84 @@ if (panelAwal) bukaPanel(panelAwal);
 
 // Modal <x-modal>
 document.querySelectorAll('[data-buka-modal]').forEach((tombol) => {
-    tombol.addEventListener('click', () => document.getElementById(tombol.dataset.bukaModal)?.classList.remove('hidden'));
+    tombol.addEventListener('click', () => {
+        const modal = document.getElementById(tombol.dataset.bukaModal);
+        if (!modal) return;
+        pembuka = tombol;
+        modal.classList.remove('hidden');
+        modal.querySelector('[data-tutup-modal]')?.focus();
+    });
 });
+
+// PBI-10: kartu target berjalan diisi dari GET /api/target/berjalan
+const kartuTarget = document.querySelector('[data-target-berjalan]');
+
+if (kartuTarget) {
+    const angka = (n) => new Intl.NumberFormat('id-ID', { maximumFractionDigits: 1 }).format(n);
+    const labelStatus = { aman: 'Aman', hampir: 'Hampir', terlampaui: 'Terlampaui' };
+    const cincin = kartuTarget.querySelector('[data-cincin]');
+    const pelat = kartuTarget.querySelector('[data-pelat]');
+    const teks = kartuTarget.querySelector('[data-teks]');
+    const gagal = kartuTarget.querySelector('[data-gagal]');
+
+    const muat = async () => {
+        kartuTarget.classList.add('tg-berjalan--memuat');
+        kartuTarget.setAttribute('aria-busy', 'true');
+        gagal.hidden = true;
+        teks.hidden = false;
+        teks.textContent = 'Memuat sisa kuota…';
+
+        try {
+            const jawaban = await fetch(kartuTarget.dataset.api, { headers: { Accept: 'application/json' } });
+            if (!jawaban.ok) throw new Error(String(jawaban.status));
+            const d = await jawaban.json();
+            if (!d.ada_target) {
+                window.location.reload();
+                return;
+            }
+
+            cincin.className = `ct-cincin tg-cincin tg-cincin--${d.status}`;
+            // Animasi cincin dari nol ke nilai sebenarnya (CSS @property --nilai)
+            requestAnimationFrame(() => cincin.style.setProperty('--nilai', Math.min(d.persen, 100)));
+            cincin.querySelector('[data-persen]').textContent = `${angka(d.persen)}%`;
+            pelat.className = `ct-pelat ct-pelat--${d.status}`;
+            pelat.textContent = labelStatus[d.status];
+            pelat.hidden = false;
+
+            const rincian = d.sisa >= 0
+                ? `Sisa ${angka(d.sisa)} kg untuk ${d.sisa_hari} hari.`
+                : `Terlampaui ${angka(Math.abs(d.sisa))} kg, masih ${d.sisa_hari} hari lagi.`;
+            teks.innerHTML = '';
+            teks.append(`${angka(d.terpakai)} dari ${angka(d.batas)} kg CO2e. `);
+            const panjang = document.createElement('span');
+            panjang.className = 'tg-panjang';
+            panjang.textContent = rincian;
+            teks.append(panjang);
+        } catch {
+            teks.hidden = true;
+            gagal.hidden = false;
+        } finally {
+            kartuTarget.classList.remove('tg-berjalan--memuat');
+            kartuTarget.removeAttribute('aria-busy');
+        }
+    };
+
+    kartuTarget.querySelector('[data-coba-lagi]').addEventListener('click', muat);
+    muat();
+}
 document.querySelectorAll('[data-tutup-modal]').forEach((tombol) => {
     tombol.addEventListener('click', () => document.getElementById(tombol.dataset.tutupModal)?.classList.add('hidden'));
 });
 
-// Esc menutup panel dan modal yang terbuka
+// Esc menutup panel dan modal yang terbuka. Didengar pada fase capture, karena kolom tanggal
+// bawaan peramban menelan Esc sebelum sampai ke dokumen.
 document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     document.querySelectorAll('.ct-latar-belakang:not(.hidden)').forEach((latar) => {
         latar.querySelector('.ct-panel-geser')?.classList.add('translate-x-full');
         setTimeout(() => latar.classList.add('hidden'), 200);
     });
-});
+}, true);
 
 // Tombol kirim dikunci selama permintaan berjalan supaya tidak tertekan dua kali
 document.querySelectorAll('[data-form-kunci]').forEach((form) => {
@@ -76,6 +171,20 @@ document.querySelectorAll('[data-mulai]').forEach((tombol) => {
 document.querySelectorAll('[data-saklar]').forEach((saklar) => {
     saklar.addEventListener('change', () => saklar.form.requestSubmit());
 });
+
+// PBI-11: keadaan memuat. Selama perubahan apa pun dikirim, daftar pengingat diganti tiga kartu
+// kerangka sampai halaman baru tampil.
+const kisiPengingat = document.querySelector('[data-kisi-pengingat]');
+const kerangkaPengingat = document.querySelector('[data-kerangka-pengingat]');
+
+if (kisiPengingat && kerangkaPengingat) {
+    document.addEventListener('submit', (e) => {
+        if (e.defaultPrevented || !e.target.closest('main')) return;
+        kisiPengingat.hidden = true;
+        kerangkaPengingat.hidden = false;
+        kerangkaPengingat.setAttribute('aria-busy', 'true');
+    });
+}
 
 // PBI-11: roda putar jam, selaras dua arah dengan kolom ketik
 document.querySelectorAll('[data-roda-jam]').forEach((roda) => {

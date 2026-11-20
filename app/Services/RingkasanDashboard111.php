@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Services\RingkasanTarget022;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +36,7 @@ class RingkasanDashboard111
 
         return [
             'emisi' => $emisi,
-            'target' => $this->bagian(fn () => $this->target($pengguna, $hariIni)),
+            'target' => $this->bagian(fn () => $this->target($pengguna)),
             'poin' => $this->bagian(fn () => $this->poin($pengguna)),
             'terbaru' => $this->bagian(fn () => $this->aktivitasTerbaru($pengguna)),
             'pengumuman' => $this->bagian(fn () => $this->pengumuman($hariIni)),
@@ -69,36 +70,18 @@ class RingkasanDashboard111
 
     // Sisa kuota target yang sedang berjalan. Tanpa target berjalan: null, supaya kartunya
     // menampilkan tombol "Tetapkan Target", bukan angka nol yang membingungkan.
-    private function target(User $pengguna, Carbon $hariIni): ?array
+    private function target(User $pengguna): ?array
     {
         if (! $this->ada('targets')) {
             return null;
         }
 
-        $tanggal = $hariIni->toDateString();
-        $target = DB::table('targets')
-            ->where('user_id', $pengguna->id)
-            ->where('period_start', '<=', $tanggal)
-            ->where('period_end', '>=', $tanggal)
-            ->orderByDesc('period_start')
-            ->first();
+        // Rumusnya milik PBI-10 (RingkasanTarget022), supaya angka di dashboard selalu sama dengan
+        // angka di halaman target.
+        $ringkasan = app(RingkasanTarget022::class);
+        $target = $ringkasan->berjalan($pengguna);
 
-        if (! $target) {
-            return null;
-        }
-
-        $terpakai = $this->ada('activities')
-            ? (float) DB::table('activities')
-                ->where('user_id', $pengguna->id)
-                ->whereBetween('activity_date', [$target->period_start, $target->period_end])
-                ->sum('emission')
-            : 0.0;
-
-        return [
-            'batas' => (float) $target->emission_limit,
-            'terpakai' => $terpakai,
-            'sisa' => (float) $target->emission_limit - $terpakai,
-        ];
+        return $target ? $ringkasan->ringkas($target) : null;
     }
 
     // EcoPoint: kolom users.points bila sudah ada (modul Gamifikasi yang mengisinya),

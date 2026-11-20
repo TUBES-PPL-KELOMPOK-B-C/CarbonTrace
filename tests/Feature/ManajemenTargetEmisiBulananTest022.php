@@ -202,6 +202,46 @@ class ManajemenTargetEmisiBulananTest022 extends TestCase
         $this->assertModelMissing($target);
     }
 
+    public function test_kartu_berjalan_memuat_dari_api_dengan_cadangan_tanpa_javascript(): void
+    {
+        $this->target();
+        $this->catat('2026-11-15', 25);
+
+        $this->actingAs($this->pengguna)->get(route('target.index'))
+            ->assertSee('data-api="'.route('target.berjalan').'"', false)
+            ->assertSee('Memuat sisa kuota…')
+            ->assertSee('Gagal memuat sisa kuota.')
+            ->assertSeeInOrder(['<noscript>', '25% terpakai. 25 dari 100 kg CO2e.', '</noscript>'], false);
+    }
+
+    public function test_riwayat_banyak_target_tetap_sedikit_kueri_dan_hari_terakhir_terhitung(): void
+    {
+        // Dua belas bulan target, masing-masing dengan catatan di hari terakhir periodenya
+        foreach (range(1, 12) as $bulan) {
+            $awal = Carbon::create(2025, $bulan, 1);
+            $this->target(['period_start' => $awal->toDateString(), 'period_end' => $awal->copy()->endOfMonth()->toDateString()]);
+            $this->catat($awal->copy()->endOfMonth()->toDateString(), $bulan);
+        }
+
+        DB::enableQueryLog();
+        $tanggapan = $this->actingAs($this->pengguna)->get(route('target.index'))->assertOk();
+        $jumlahKueri = count(DB::getQueryLog());
+
+        $this->assertLessThan(10, $jumlahKueri);
+        $tanggapan->assertSee('12 dari 100 kg CO2e')->assertSee('1 dari 100 kg CO2e');
+    }
+
+    public function test_dashboard_dan_halaman_target_memakai_angka_yang_sama(): void
+    {
+        $this->target(['emission_limit' => 80]);
+        $this->catat('2026-11-30', 30.25);
+        $this->catat('2026-11-02', 10);
+
+        $this->actingAs($this->pengguna);
+        $this->getJson(route('target.berjalan'))->assertJsonPath('sisa', 39.75);
+        $this->get(route('dashboard.index'))->assertSeeInOrder(['Sisa kuota target', '39,75', 'Tersisa dari batas 80,00 kg']);
+    }
+
     public function test_event_terkirim_saat_aktivitas_dicatat_dan_dikoreksi(): void
     {
         $target = $this->target();

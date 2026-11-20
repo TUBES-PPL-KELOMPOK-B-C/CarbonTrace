@@ -43,10 +43,17 @@ class SimpanPengingatPencatatanHarian022 extends FormRequest
                         $gagal('Sudah ada pengingat di jam ini.');
                     }
                 },
-                // Pengingat baru selalu aktif, jadi jumlah yang aktif tidak boleh melebihi tiga.
+                // Pengingat baru selalu aktif, jadi jumlah yang aktif tidak boleh melebihi tiga. Halaman
+                // menampilkan paling banyak tiga kartu, maka jumlah keseluruhan juga dibatasi tiga.
                 function (string $atribut, mixed $nilai, Closure $gagal) use ($pengingat) {
-                    if (! $pengingat && self::jumlahAktif($this->user()->id) >= self::MAKS_AKTIF) {
+                    if ($pengingat) {
+                        return;
+                    }
+
+                    if (self::jumlahAktif($this->user()->id) >= self::MAKS_AKTIF) {
                         $gagal('Maksimal tiga pengingat aktif.');
+                    } elseif (Reminder022::where('user_id', $this->user()->id)->count() >= self::MAKS_AKTIF) {
+                        $gagal('Maksimal tiga pengingat. Hapus pengingat yang tidak dipakai untuk menambah yang baru.');
                     }
                 },
             ],

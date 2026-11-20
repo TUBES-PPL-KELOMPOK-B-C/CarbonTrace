@@ -26,7 +26,14 @@
                 </x-kosong>
             </section>
         @else
-            <div class="pg-kisi">
+            {{-- Keadaan memuat: tiga kartu kerangka, ditampilkan JavaScript selama perubahan dikirim --}}
+            <div class="pg-kisi" data-kerangka-pengingat hidden aria-label="Memuat pengingat">
+                @for ($i = 0; $i < 3; $i++)
+                    <div class="ct-kartu pg-kerangka"><span class="ct-kerangka"></span><span class="ct-kerangka"></span><span class="ct-kerangka"></span></div>
+                @endfor
+            </div>
+
+            <div class="pg-kisi" data-kisi-pengingat>
                 @foreach ($pengingat as $p)
                     <article class="ct-kartu pg-kartu {{ $p->is_active ? '' : 'pg-kartu--mati' }}" aria-labelledby="pg-jam-{{ $p->id }}">
                         <div class="pg-kartu__atas">

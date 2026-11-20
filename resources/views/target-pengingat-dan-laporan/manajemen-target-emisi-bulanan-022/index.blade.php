@@ -30,10 +30,13 @@
 
         @if ($berjalan)
             @php $r = $ringkasanBerjalan; @endphp
-            <section class="ct-kartu tg-berjalan" aria-labelledby="tg-berjalan-judul">
-                <div class="ct-cincin tg-cincin tg-cincin--{{ $r['status'] }}" style="--nilai: {{ min($r['persen'], 100) }}">
+            {{-- Angka kartu ini dimuat dari /api/target/berjalan (memuat -> cincin kerangka berputar,
+                 gagal -> tombol coba lagi). Tanpa JavaScript, angka dari server di dalam noscript tampil. --}}
+            <section class="ct-kartu tg-berjalan tg-berjalan--memuat" aria-labelledby="tg-berjalan-judul"
+                     data-target-berjalan data-api="{{ route('target.berjalan') }}" aria-busy="true">
+                <div class="ct-cincin tg-cincin" style="--nilai: 0" data-cincin>
                     <div class="ct-cincin__isi">
-                        <span class="tg-cincin__angka">{{ PerhitunganEmisi111::angka($r['persen'], 1) }}%</span>
+                        <span class="tg-cincin__angka" data-persen>–</span>
                         <span class="tg-cincin__ket">terpakai</span>
                     </div>
                 </div>
@@ -41,16 +44,19 @@
                 <div class="tg-rincian">
                     <p class="tg-rincian__label">Target berjalan</p>
                     <h2 class="tg-rincian__judul" id="tg-berjalan-judul">{{ $periode($berjalan) }}</h2>
-                    <x-pelat :varian="$r['status']">{{ $labelStatus[$r['status']] }}</x-pelat>
+                    <span class="ct-pelat tg-pelat-isi" data-pelat hidden></span>
 
                     {{-- Padanan teks cincin, selalu terbaca --}}
-                    <p class="tg-rincian__teks">
-                        {{ $kg($r['terpakai']) }} dari {{ $kg($r['batas']) }} kg CO2e.
-                        @if ($r['sisa'] >= 0)
-                            <span class="tg-panjang">Sisa {{ $kg($r['sisa']) }} kg untuk {{ $r['sisa_hari'] }} hari.</span>
-                        @else
-                            <span class="tg-panjang">Terlampaui {{ $kg(abs($r['sisa'])) }} kg, masih {{ $r['sisa_hari'] }} hari lagi.</span>
-                        @endif
+                    <p class="tg-rincian__teks" aria-live="polite" data-teks>Memuat sisa kuota…</p>
+                    <noscript>
+                        <x-pelat :varian="$r['status']">{{ $labelStatus[$r['status']] }}</x-pelat>
+                        <p class="tg-rincian__teks">
+                            {{ $kg($r['persen']) }}% terpakai. {{ $kg($r['terpakai']) }} dari {{ $kg($r['batas']) }} kg CO2e.
+                            Sisa {{ $kg($r['sisa']) }} kg untuk {{ $r['sisa_hari'] }} hari.
+                        </p>
+                    </noscript>
+                    <p class="tg-gagal" data-gagal hidden>
+                        Gagal memuat sisa kuota. <button type="button" class="ct-tombol ct-tombol--hantu" data-coba-lagi>Coba lagi</button>
                     </p>
 
                     <div class="tg-rincian__aksi">
