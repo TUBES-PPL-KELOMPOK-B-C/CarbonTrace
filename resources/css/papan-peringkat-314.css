@@ -1,0 +1,585 @@
+/* ==========================================================================
+   Papan Peringkat Komunitas (PBI-20 / KF-26)
+   Akhiran: 314 (Rosi Rahmawati - Modul Akun & Administrasi)
+   Sistem Desain: Dark Emerald Cybernetic CarbonTrace
+   ========================================================================== */
+
+/* Kontainer Utama */
+.ct-peringkat-wadah {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ct-s5, 24px);
+    width: 100%;
+    max-width: var(--ct-max, 1200px);
+    margin: 0 auto;
+    padding-bottom: 96px; /* Ruang untuk baris saya yang menempel di bawah */
+}
+
+/* Header & Filter Navigasi */
+.ct-peringkat-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ct-s4, 16px);
+}
+
+.ct-peringkat-intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: var(--ct-s3, 12px);
+}
+
+.ct-peringkat-judul {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--ct-text, #E8EDEB);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.ct-peringkat-sub {
+    font-size: 14px;
+    color: var(--ct-text-muted, #8CA099);
+    margin: 4px 0 0 0;
+}
+
+.ct-peringkat-catatan-waktu {
+    font-size: 12px;
+    color: var(--ct-text-muted, #8CA099);
+    background: rgba(30, 43, 38, 0.6);
+    border: 1px solid var(--ct-border, #1E2B26);
+    padding: 6px 12px;
+    border-radius: var(--ct-r-pill, 999px);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ct-peringkat-catatan-waktu span.titik {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ct-primary, #10B981);
+    box-shadow: 0 0 6px var(--ct-primary, #10B981);
+}
+
+/* Bilah Tab & Pengurutan */
+.ct-peringkat-kontrol {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ct-s4, 16px);
+    background: var(--ct-surface, #111A17);
+    border: 1px solid var(--ct-border, #1E2B26);
+    padding: 10px 16px;
+    border-radius: var(--ct-r-card, 16px);
+}
+
+.ct-tablist {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(6, 19, 14, 0.6);
+    padding: 4px;
+    border-radius: var(--ct-r-ctrl, 12px);
+    border: 1px solid var(--ct-border, #1E2B26);
+}
+
+.ct-tab-item {
+    background: transparent;
+    border: none;
+    color: var(--ct-text-muted, #8CA099);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ct-tab-item:hover:not(.ct-tab-item--aktif) {
+    color: var(--ct-text, #E8EDEB);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ct-tab-item--aktif {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(163, 230, 53, 0.15));
+    color: var(--ct-accent, #A3E635);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.ct-urut-grup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ct-urut-label {
+    font-size: 13px;
+    color: var(--ct-text-muted, #8CA099);
+    font-weight: 500;
+}
+
+.ct-urut-pilih {
+    background: var(--ct-surface-raised, #1A2622);
+    border: 1px solid var(--ct-border, #1E2B26);
+    color: var(--ct-text, #E8EDEB);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: var(--ct-r-ctrl, 12px);
+    cursor: pointer;
+    outline: none;
+}
+
+.ct-urut-pilih:focus {
+    border-color: var(--ct-primary, #10B981);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+/* ==========================================================================
+   PODIUM 3 BESAR
+   ========================================================================== */
+.ct-podium-wadah {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ct-s4, 16px);
+    align-items: flex-end;
+    margin: var(--ct-s4, 16px) 0 var(--ct-s5, 24px);
+    padding: 24px 16px 0;
+}
+
+.ct-podium-item {
+    background: var(--ct-surface, #111A17);
+    border: 1px solid var(--ct-border, #1E2B26);
+    border-radius: var(--ct-r-card, 16px) var(--ct-r-card, 16px) 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 20px;
+    position: relative;
+    text-align: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ct-podium-item:hover {
+    transform: translateY(-4px);
+}
+
+/* Juara 1 (Tengah) */
+.ct-podium-item--1 {
+    order: 2;
+    min-height: 280px;
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.12) 0%, var(--ct-surface, #111A17) 60%);
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 24px rgba(245, 158, 11, 0.15);
+}
+
+/* Juara 2 (Kiri) */
+.ct-podium-item--2 {
+    order: 1;
+    min-height: 240px;
+    background: linear-gradient(180deg, rgba(148, 163, 184, 0.1) 0%, var(--ct-surface, #111A17) 60%);
+    border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* Juara 3 (Kanan) */
+.ct-podium-item--3 {
+    order: 3;
+    min-height: 210px;
+    background: linear-gradient(180deg, rgba(217, 119, 6, 0.08) 0%, var(--ct-surface, #111A17) 60%);
+    border-color: rgba(217, 119, 6, 0.3);
+}
+
+/* Mahkota / Pita Peringkat */
+.ct-podium-lencana {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.ct-podium-item--1 .ct-podium-lencana {
+    background: #F59E0B;
+    color: #06130E;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.6);
+}
+
+.ct-podium-item--2 .ct-podium-lencana {
+    background: #94A3B8;
+    color: #06130E;
+}
+
+.ct-podium-item--3 .ct-podium-lencana {
+    background: #D97706;
+    color: #FFFFFF;
+}
+
+/* Foto Bulat Podium */
+.ct-podium-foto-wadah {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 12px;
+    position: relative;
+    padding: 3px;
+    background: var(--ct-border, #1E2B26);
+}
+
+.ct-podium-item--1 .ct-podium-foto-wadah {
+    width: 96px;
+    height: 96px;
+    background: linear-gradient(135deg, #F59E0B, #A3E635);
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+}
+
+.ct-podium-foto {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--ct-surface-raised, #1A2622);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--ct-primary, #10B981);
+}
+
+.ct-podium-nama {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ct-text, #E8EDEB);
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+
+.ct-podium-item--1 .ct-podium-nama {
+    font-size: 17px;
+}
+
+.ct-podium-skor {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 8px;
+}
+
+.ct-podium-angka {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ct-accent, #A3E635);
+    line-height: 1.1;
+}
+
+.ct-podium-satuan {
+    font-size: 11px;
+    color: var(--ct-text-muted, #8CA099);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ct-podium-badge-bar {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+/* ==========================================================================
+   TABEL PERINGKAT
+   ========================================================================== */
+.ct-tabel-kartu {
+    background: var(--ct-surface, #111A17);
+    border: 1px solid var(--ct-border, #1E2B26);
+    border-radius: var(--ct-r-card, 16px);
+    overflow: hidden;
+}
+
+.ct-tabel-peringkat {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ct-tabel-peringkat th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--ct-text-muted, #8CA099);
+    padding: 14px 20px;
+    background: rgba(6, 19, 14, 0.4);
+    border-bottom: 1px solid var(--ct-border, #1E2B26);
+}
+
+.ct-tabel-peringkat td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--ct-border, #1E2B26);
+    color: var(--ct-text, #E8EDEB);
+    font-size: 14px;
+}
+
+.ct-tabel-peringkat tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Peringkat Kolom */
+.ct-kolom-peringkat {
+    width: 80px;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ct-text-muted, #8CA099);
+}
+
+.ct-kolom-pengguna {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ct-mini-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--ct-surface-raised, #1A2622);
+    border: 1px solid var(--ct-border, #1E2B26);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ct-primary, #10B981);
+    flex-shrink: 0;
+}
+
+.ct-nama-pengguna {
+    font-weight: 600;
+    color: var(--ct-text, #E8EDEB);
+}
+
+/* Sorotan Baris Saya */
+.ct-baris-saya td {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border-top: 1px solid rgba(16, 185, 129, 0.3);
+    border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.ct-baris-saya .ct-nama-pengguna {
+    color: var(--ct-accent, #A3E635);
+    font-weight: 700;
+}
+
+.ct-pelat-kamu {
+    background: rgba(16, 185, 129, 0.25);
+    color: #A3E635;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--ct-r-pill, 999px);
+    margin-left: 8px;
+    border: 1px solid rgba(163, 230, 53, 0.3);
+}
+
+/* Baris Menempel di Bawah untuk Pengguna yang Login (Sticky Bottom) */
+.ct-baris-saya-tetap {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 48px);
+    max-width: var(--ct-max, 1200px);
+    background: rgba(17, 26, 23, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 16px rgba(16, 185, 129, 0.2);
+    border-radius: var(--ct-r-card, 16px);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 40;
+}
+
+.ct-saya-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.ct-saya-peringkat {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--ct-accent, #A3E635);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.ct-saya-peringkat small {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ct-text-muted, #8CA099);
+}
+
+.ct-saya-metrik {
+    display: flex;
+    gap: 24px;
+}
+
+.ct-saya-metrik-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.ct-saya-metrik-label {
+    font-size: 11px;
+    color: var(--ct-text-muted, #8CA099);
+    text-transform: uppercase;
+}
+
+.ct-saya-metrik-nilai {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ct-text, #E8EDEB);
+}
+
+/* ==========================================================================
+   KEADAAN KHUSUS (Kosong, Memuat, Galat)
+   ========================================================================== */
+.ct-keadaan-wadah {
+    background: var(--ct-surface, #111A17);
+    border: 1px solid var(--ct-border, #1E2B26);
+    border-radius: var(--ct-r-card, 16px);
+    padding: 64px 24px;
+    text-align: center;
+}
+
+.ct-keadaan-ikon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    color: var(--ct-text-muted, #8CA099);
+    opacity: 0.7;
+}
+
+.ct-keadaan-judul {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ct-text, #E8EDEB);
+    margin: 0 0 8px 0;
+}
+
+.ct-keadaan-teks {
+    font-size: 14px;
+    color: var(--ct-text-muted, #8CA099);
+    max-width: 480px;
+    margin: 0 auto 20px;
+}
+
+/* Kerangka Memuat */
+.ct-baris-kerangka {
+    height: 56px;
+    border-bottom: 1px solid var(--ct-border, #1E2B26);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 16px;
+}
+
+.ct-blok-kerangka {
+    background: linear-gradient(90deg, rgba(26, 38, 34, 0.4), rgba(30, 43, 38, 0.8), rgba(26, 38, 34, 0.4));
+    background-size: 200% 100%;
+    animation: ct-denyut 1.4s ease-in-out infinite;
+    border-radius: 6px;
+    height: 18px;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 768px) {
+    .ct-podium-wadah {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 12px;
+        scroll-snap-type: x mandatory;
+        gap: 12px;
+    }
+    .ct-podium-item {
+        min-width: 180px;
+        scroll-snap-align: center;
+    }
+    .ct-peringkat-kontrol {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .ct-tablist {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .ct-tab-item {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+    .ct-baris-saya-tetap {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+        padding: 12px 16px;
+    }
+    .ct-saya-metrik {
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 640px) {
+    .ct-tabel-peringkat, .ct-tabel-peringkat tbody, .ct-tabel-peringkat tr, .ct-tabel-peringkat td {
+        display: block;
+        width: 100%;
+    }
+    .ct-tabel-peringkat thead {
+        display: none;
+    }
+    .ct-tabel-peringkat tr {
+        border-bottom: 1px solid var(--ct-border, #1E2B26);
+        padding: 12px 16px;
+    }
+    .ct-tabel-peringkat td {
+        border: 0;
+        padding: 6px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .ct-tabel-peringkat td::before {
+        content: attr(data-label);
+        color: var(--ct-text-muted, #8CA099);
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .ct-kolom-pengguna {
+        justify-content: flex-end;
+    }
+}

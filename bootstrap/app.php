@@ -6,6 +6,11 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+if (! class_exists('App\Models\User', false)) {
+    class_alias(\App\Models\User314::class, 'App\Models\User');
+}
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -48,15 +53,15 @@ return Application::configure(basePath: dirname(__DIR__))
                 return back()->withInput()->with('galat_kalkulator', $pesan);
             }
 
-            if ($request->routeIs('auth.proses')) {
-                return back()->withInput($request->only('email', 'ingat'))->with('galat_masuk', $pesan);
+            if ($request->routeIs('auth.proses', 'login')) {
+                return back()->withInput($request->only('email', 'remember', 'ingat'))->with('galat_masuk', $pesan);
             }
 
-            if ($request->routeIs('auth.kirim', 'auth.atur')) {
+            if ($request->routeIs('auth.kirim', 'auth.atur', 'password.email', 'password.store')) {
                 return back()->withInput($request->only('email'))->withErrors(['email' => $pesan]);
             }
 
-            if ($request->routeIs('auth.simpan')) {
+            if ($request->routeIs('auth.simpan', 'register')) {
                 return back()->withInput($request->except('password', 'password_confirmation'))->withErrors(['email' => $pesan]);
             }
         });

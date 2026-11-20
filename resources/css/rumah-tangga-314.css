@@ -1,0 +1,184 @@
+/* ==========================================================================
+   Modul Akun dan Administrasi Pengguna - PBI-02: Pengaturan Konsumsi Rumah Tangga
+   Penulis: Rosi Rahmawati (102022400314)
+   ========================================================================== */
+
+.rt-wadah {
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.rt-ajakan-kosong {
+  background: color-mix(in srgb, var(--ct-primary) 8%, var(--ct-surface));
+  border: 1px dashed var(--ct-primary);
+  border-radius: var(--ct-r-card);
+  padding: var(--ct-s5);
+  margin-bottom: var(--ct-s5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ct-s4);
+}
+
+@media (max-width: 640px) {
+  .rt-ajakan-kosong {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.rt-catatan {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ct-s3);
+  padding: var(--ct-s4);
+  background: var(--ct-surface-raised);
+  border: 1px solid var(--ct-border);
+  border-left: 4px solid var(--ct-primary);
+  border-radius: var(--ct-r-ctrl);
+  font-size: 14px;
+  color: var(--ct-text-muted);
+  line-height: 1.6;
+  margin-bottom: var(--ct-s5);
+}
+
+.rt-catatan strong {
+  color: var(--ct-text);
+}
+
+/* ---------- Penggeser Angka (Range Slider) ---------- */
+.rt-penggeser-baris {
+  display: flex;
+  align-items: center;
+  gap: var(--ct-s4);
+}
+
+.ct-penggeser {
+  flex: 1;
+  height: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--ct-surface-raised);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-r-pill);
+  outline: none;
+  accent-color: var(--ct-primary);
+  cursor: pointer;
+}
+
+.ct-penggeser::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ct-primary), var(--ct-accent));
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  border: 2px solid var(--ct-bg);
+}
+
+.ct-penggeser::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ct-primary), var(--ct-accent));
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  border: 2px solid var(--ct-bg);
+}
+
+.rt-penggeser-angka {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  height: 44px;
+  padding: 0 var(--ct-s3);
+  background: var(--ct-surface-raised);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-r-ctrl);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ct-accent);
+}
+
+/* ---------- Kartu Pilihan Kendaraan (Radio Cards) ---------- */
+.rt-kartu-pilihan-kisi {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ct-s3);
+}
+
+@media (max-width: 768px) {
+  .rt-kartu-pilihan-kisi {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.ct-pilihan-kartu {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ct-s2);
+  padding: var(--ct-s4);
+  background: var(--ct-surface-raised);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-r-ctrl);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.ct-pilihan-kartu input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ct-pilihan-kartu:hover {
+  border-color: var(--ct-primary);
+  background: color-mix(in srgb, var(--ct-primary) 5%, var(--ct-surface-raised));
+}
+
+.ct-pilihan-kartu:has(input[type="radio"]:checked) {
+  border-color: var(--ct-primary);
+  background: color-mix(in srgb, var(--ct-primary) 12%, var(--ct-surface-raised));
+  box-shadow: 0 0 0 2px var(--ct-primary);
+}
+
+.ct-pilihan-kartu:has(input[type="radio"]:focus-visible) {
+  box-shadow: var(--ct-ring);
+}
+
+.ct-pilihan-kartu__ikon {
+  width: 28px;
+  height: 28px;
+  color: var(--ct-primary);
+}
+
+.ct-pilihan-kartu__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ct-text);
+  text-align: center;
+}
+
+.rt-aksi-tombol {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ct-s3);
+  margin-top: var(--ct-s5);
+  padding-top: var(--ct-s4);
+  border-top: 1px solid var(--ct-border);
+}
+
+@media (max-width: 640px) {
+  .rt-aksi-tombol {
+    flex-direction: column-reverse;
+  }
+}
