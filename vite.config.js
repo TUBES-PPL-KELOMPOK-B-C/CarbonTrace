@@ -20,6 +20,8 @@ export default defineConfig({
                 'resources/css/target-pengingat-022.css',
                 'resources/js/target-pengingat-022.js',
                 'resources/css/profil-314.css',
+                'resources/css/rumah-tangga-314.css',
+                'resources/css/papan-peringkat-314.css',
             ],
             refresh: true,
             fonts: [

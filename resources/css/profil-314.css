@@ -36,6 +36,13 @@
   }
 }
 
+.pr-kolom-kiri,
+.pr-kolom-kanan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ct-s5);
+}
+
 /* ---------- Kartu Identitas (Kiri) ---------- */
 .pr-kartu-identitas {
   display: flex;
@@ -131,6 +138,28 @@
   color: var(--ct-accent);
 }
 
+.pr-stat-satuan {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ct-text-muted);
+}
+
+.pr-info-bergabung {
+  width: 100%;
+  padding: var(--ct-s3) 0;
+  margin-bottom: var(--ct-s4);
+  border-top: 1px solid var(--ct-border);
+  border-bottom: 1px solid var(--ct-border);
+  font-size: 13px;
+  color: var(--ct-text-muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.pr-info-bergabung strong {
+  color: var(--ct-text);
+}
+
 .pr-aksi-kiri {
   width: 100%;
   display: flex;
@@ -157,6 +186,11 @@
   }
 }
 
+.pr-label-opsional {
+  color: var(--ct-text-muted);
+  font-size: 12px;
+}
+
 .pr-unggah-kotak {
   display: flex;
   align-items: center;
@@ -177,11 +211,34 @@
 }
 
 .pr-unggah-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--ct-s1);
   font-size: 13px;
   color: var(--ct-text-muted);
+}
+
+.pr-unggah-berkas {
+  padding-top: 10px;
+  height: auto;
+}
+
+.pr-unggah-bawah {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ct-s2);
+  flex-wrap: wrap;
+}
+
+.pr-hapus-foto {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--ct-danger);
+  font-size: 12px;
 }
 
 .pr-formulir-tombol {
@@ -197,5 +254,156 @@
 @media (max-width: 640px) {
   .pr-formulir-tombol {
     flex-direction: column;
+  }
+}
+
+/* ---------- Kartu Ringkasan Rumah Tangga di Profil ---------- */
+.pr-rt-kisi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--ct-s4);
+  margin-bottom: var(--ct-s4);
+}
+
+.pr-rt-kotak {
+  background: var(--ct-surface-raised);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-r-ctrl);
+  padding: var(--ct-s4);
+}
+
+.pr-rt-label {
+  font-size: 13px;
+  color: var(--ct-text-muted);
+  margin-bottom: var(--ct-s1);
+}
+
+.pr-rt-nilai {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ct-primary);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pr-rt-nilai--aksen {
+  color: var(--ct-accent);
+}
+
+.pr-rt-nilai--teks {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ct-text);
+  text-transform: capitalize;
+  margin-top: 2px;
+}
+
+.pr-rt-satuan {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ct-text);
+}
+
+.pr-rt-pelat-kecil {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pr-rt-keterangan {
+  font-size: 12px;
+  color: var(--ct-text-muted);
+  margin-top: var(--ct-s1);
+}
+
+.pr-rt-kaki {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--ct-s3);
+  padding-top: var(--ct-s3);
+  border-top: 1px solid var(--ct-border);
+}
+
+.pr-rt-catatan-kaki {
+  font-size: 13px;
+  color: var(--ct-text-muted);
+}
+
+.pr-rt-aksi {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ct-s3);
+  flex-wrap: wrap;
+}
+
+/* ---------- Modal Profil ---------- */
+.pr-modal-deskripsi {
+  color: var(--ct-text-muted);
+  font-size: 14px;
+  margin: 0 0 var(--ct-s4);
+  line-height: 1.6;
+}
+
+.pr-modal-galat {
+  background: color-mix(in srgb, var(--ct-danger) 12%, var(--ct-surface));
+  border: 1px solid color-mix(in srgb, var(--ct-danger) 45%, transparent);
+  color: var(--ct-danger);
+  border-radius: var(--ct-r-ctrl);
+  padding: var(--ct-s3) var(--ct-s4);
+  font-size: 13px;
+  margin-bottom: var(--ct-s4);
+}
+
+.pr-modal-grup {
+  margin-bottom: var(--ct-s4);
+}
+
+.pr-modal-grup--akhir {
+  margin-bottom: var(--ct-s5);
+}
+
+.pr-modal-centang-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.pr-modal-centang-input {
+  margin-top: 4px;
+}
+
+.pr-modal-centang-teks {
+  font-size: 14px;
+  color: var(--ct-text);
+}
+
+.pr-modal-kaki {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ct-s3);
+  border-top: 1px solid var(--ct-border);
+  padding-top: var(--ct-s4);
+  margin-top: var(--ct-s3);
+}
+
+/* ---------- Spinner Memuat pada Tombol ---------- */
+.ct-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ct-putar 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes ct-putar {
+  to {
+    transform: rotate(360deg);
   }
 }

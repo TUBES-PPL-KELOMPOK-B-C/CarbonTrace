@@ -4,22 +4,22 @@
 
     {{-- Kotak Catatan Penjelasan --}}
     <div class="rt-catatan">
-        <svg class="ap-ikon" style="color: var(--ct-primary); margin-top: 2px;" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <svg class="ap-ikon rt-catatan__ikon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
         </svg>
         <div>
             <strong>Bagaimana angka ini digunakan dalam kalkulasi?</strong>
-            <p style="margin: 4px 0 0 0;">
+            <p class="rt-catatan__paragraf">
                 Data ini menjadi dasar pembagi emisi listrik rumahmu di seluruh sistem. Misalnya daya listrik rumah dipakai bersama 4 orang penghuni, maka emisi listrik yang tercatat dibagi 4 (masing-masing 25%).
             </p>
-            <p style="margin: 4px 0 0 0; color: var(--ct-accent); font-size: 13px;">
-                * Cukup ubah isian di bawah ini lalu tekan <strong>Simpan Pengaturan</strong> untuk memperbarui data kapan saja (tidak perlu menghapus data lama).
+            <p class="rt-catatan__tips">
+                * Cukup ubah isian di bawah ini lalu tekan <strong>Simpan Pengaturan</strong> untuk memperbarui data kapan saja tanpa perlu menghapus data lama.
             </p>
         </div>
     </div>
 
     {{-- 1. Penggeser Jumlah Penghuni (1 - 20) --}}
-    <div class="ct-isian-grup" style="margin-bottom: var(--ct-s5);">
+    <div class="ct-isian-grup rt-grup-isian">
         <label for="household_size" class="ct-label">
             Jumlah Penghuni Rumah <span class="text-rose-500">*</span>
         </label>
@@ -35,11 +35,11 @@
                    oninput="perbaruiKalkulasiRt(this.value, document.getElementById('power_watt').value)"
                    aria-describedby="ket-penghuni @error('household_size') galat-penghuni @enderror"
                    @error('household_size') aria-invalid="true" @enderror>
-            <span class="rt-penggeser-angka" id="angka-penghuni">
+            <span class="rt-penggeser-angka" id="angka-penghuni" aria-live="polite">
                 {{ old('household_size', $setting->household_size ?? 1) }} orang
             </span>
         </div>
-        <span class="text-sm" id="ket-penghuni" style="color: var(--ct-text-muted); font-size: 13px;">
+        <span class="rt-keterangan-isian" id="ket-penghuni">
             Geser atau gunakan tombol panah keyboard (1 sampai 20 orang).
         </span>
         @error('household_size')
@@ -47,50 +47,40 @@
         @enderror
     </div>
 
-    {{-- 2. Kolom Daya Listrik Terpasang (Watt) --}}
-    <div class="ct-isian-grup" style="margin-bottom: var(--ct-s5);">
-        <label for="power_watt" class="ct-label">
-            Daya Listrik Terpasang Rumah (PLN) <span class="text-rose-500">*</span>
-        </label>
-        <div class="ct-isian-satuan">
-            <input type="number"
-                   id="power_watt"
-                   name="power_watt"
-                   min="450"
-                   max="50000"
-                   step="50"
-                   placeholder="Contoh: 900, 1300, 2200, 4400"
-                   value="{{ old('power_watt', $setting->power_watt ?? 900) }}"
-                   class="ct-isian @error('power_watt') border-rose-500 @enderror"
-                   required
-                   oninput="perbaruiKalkulasiRt(document.getElementById('household_size').value, this.value)"
-                   aria-describedby="ket-watt @error('power_watt') galat-watt @enderror"
-                   @error('power_watt') aria-invalid="true" @enderror>
-            <span>watt</span>
-        </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
-            <span style="font-size: 12px; color: var(--ct-text-muted); align-self: center; margin-right: 4px;">Pilihan standar PLN:</span>
+    {{-- 2. Kolom Daya Listrik Terpasang (Watt) menggunakan komponen <x-isian> --}}
+    <div class="rt-grup-isian">
+        <x-isian
+            label="Daya Listrik Terpasang Rumah (PLN)"
+            nama="power_watt"
+            id="power_watt"
+            tipe="number"
+            satuan="watt"
+            :nilai="$setting->power_watt ?? 900"
+            :wajib="true"
+            min="450"
+            max="50000"
+            step="50"
+            placeholder="Contoh: 900, 1300, 2200, 4400"
+            aria-describedby="ket-watt"
+            oninput="perbaruiKalkulasiRt(document.getElementById('household_size').value, this.value)" />
+
+        <div class="rt-pilihan-pln">
+            <span class="rt-pilihan-pln__label">Pilihan standar PLN:</span>
             @foreach ([450, 900, 1300, 2200, 3500, 4400, 5500] as $daya)
-                <button type="button" 
-                        onclick="const pw = document.getElementById('power_watt'); pw.value = {{ $daya }}; perbaruiKalkulasiRt(document.getElementById('household_size').value, {{ $daya }});" 
-                        class="ct-pelat ct-pelat--netral" 
-                        style="cursor: pointer; font-size: 11px; padding: 2px 8px; background: var(--ct-surface); border: 1px solid var(--ct-border); color: var(--ct-text-muted);"
-                        onmouseover="this.style.borderColor='var(--ct-primary)'; this.style.color='var(--ct-primary)';"
-                        onmouseout="this.style.borderColor='var(--ct-border)'; this.style.color='var(--ct-text-muted)';">
+                <button type="button"
+                        class="rt-chip-pln"
+                        onclick="pilihDayaPln({{ $daya }})">
                     {{ number_format($daya, 0, ',', '.') }} VA
                 </button>
             @endforeach
         </div>
-        <span class="text-sm" id="ket-watt" style="color: var(--ct-text-muted); font-size: 13px;">
+        <span class="rt-keterangan-isian" id="ket-watt">
             Daya listrik meteran rumah (antara 450 sampai 50.000 watt).
         </span>
-        @error('power_watt')
-            <span class="ct-galat" id="galat-watt" role="alert">{{ $message }}</span>
-        @enderror
     </div>
 
     {{-- 3. Kartu Pilihan Kepemilikan Kendaraan (4 Kartu Radio) --}}
-    <div class="ct-isian-grup" style="margin-bottom: var(--ct-s5);">
+    <div class="ct-isian-grup rt-grup-isian">
         <span class="ct-label">
             Kepemilikan Kendaraan Rumah Tangga <span class="text-rose-500">*</span>
         </span>
@@ -138,32 +128,32 @@
     </div>
 
     {{-- Kartu Simulasi & Pratinjau Interaktif --}}
-    <div class="ct-kartu" style="background: color-mix(in srgb, var(--ct-primary) 6%, var(--ct-surface)); border: 1px dashed var(--ct-primary); margin-bottom: var(--ct-s5); padding: var(--ct-s4);">
-        <h4 style="font-size: 15px; font-weight: 700; margin: 0 0 var(--ct-s2); color: var(--ct-accent); display: flex; align-items: center; gap: 8px;">
+    <div class="rt-simulasi">
+        <h4 class="rt-simulasi__judul">
             <svg class="ap-ikon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Simulasi Beban Emisi Rumah Tangga Anda
+            Simulasi Beban Emisi Rumah Tanggamu
         </h4>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--ct-s3); font-size: 13px;">
-            <div style="background: var(--ct-surface-raised); padding: var(--ct-s3); border-radius: var(--ct-r-ctrl); border: 1px solid var(--ct-border);">
-                <div style="color: var(--ct-text-muted);">Beban Per Kapita:</div>
-                <div id="simulasi-beban" style="font-size: 18px; font-weight: 800; color: var(--ct-primary); margin-top: 2px;">
-                    {{ number_format(100 / max(1, old('household_size', $setting->household_size ?? 1)), 1) }}%
+        <div class="rt-simulasi__kisi">
+            <div class="rt-simulasi__item">
+                <div class="rt-simulasi__label">Beban Per Kapita:</div>
+                <div id="simulasi-beban" class="rt-simulasi__nilai" aria-live="polite">
+                    {{ number_format(100 / max(1, old('household_size', $setting->household_size ?? 1)), 1, ',', '.') }}%
                 </div>
-                <div style="color: var(--ct-text-muted); font-size: 11px;">(1 dari <span id="simulasi-orang">{{ old('household_size', $setting->household_size ?? 1) }}</span> orang)</div>
+                <div class="rt-simulasi__sub">(1 dari <span id="simulasi-orang">{{ old('household_size', $setting->household_size ?? 1) }}</span> orang)</div>
             </div>
-            <div style="background: var(--ct-surface-raised); padding: var(--ct-s3); border-radius: var(--ct-r-ctrl); border: 1px solid var(--ct-border);">
-                <div style="color: var(--ct-text-muted);">Kapasitas Daya Rumah:</div>
-                <div id="simulasi-watt" style="font-size: 18px; font-weight: 800; color: var(--ct-accent); margin-top: 2px;">
+            <div class="rt-simulasi__item">
+                <div class="rt-simulasi__label">Kapasitas Daya Rumah:</div>
+                <div id="simulasi-watt" class="rt-simulasi__nilai rt-simulasi__nilai--aksen" aria-live="polite">
                     {{ number_format(old('power_watt', $setting->power_watt ?? 900), 0, ',', '.') }} VA
                 </div>
-                <div style="color: var(--ct-text-muted); font-size: 11px;">Standar Golongan PLN</div>
+                <div class="rt-simulasi__sub">Standar Golongan PLN</div>
             </div>
-            <div style="background: var(--ct-surface-raised); padding: var(--ct-s3); border-radius: var(--ct-r-ctrl); border: 1px solid var(--ct-border);">
-                <div style="color: var(--ct-text-muted);">Aset Kendaraan:</div>
-                <div id="simulasi-kendaraan" style="font-size: 16px; font-weight: 700; color: var(--ct-text); margin-top: 4px; text-transform: capitalize;">
+            <div class="rt-simulasi__item">
+                <div class="rt-simulasi__label">Aset Kendaraan:</div>
+                <div id="simulasi-kendaraan" class="rt-simulasi__nilai--teks" aria-live="polite">
                     {{ $terpilih === 'tidak ada' ? 'Tidak Ada' : ($terpilih === 'motor' ? 'Sepeda Motor' : ($terpilih === 'mobil' ? 'Mobil' : 'Keduanya')) }}
                 </div>
-                <div style="color: var(--ct-text-muted); font-size: 11px;">Profil mobilitas</div>
+                <div class="rt-simulasi__sub">Profil mobilitas</div>
             </div>
         </div>
     </div>
@@ -172,7 +162,7 @@
     <div class="rt-aksi-tombol">
         <div>
             @if ($setting)
-                <x-tombol tipe="button" varian="hantu" onclick="bukaModal('modal-hapus-rumah')" style="color: var(--ct-danger);">
+                <x-tombol tipe="button" varian="hantu" class="rt-tombol-hapus-teks" onclick="bukaModal('modal-hapus-rumah')">
                     <svg class="ap-ikon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                     </svg>
@@ -181,7 +171,7 @@
             @endif
         </div>
 
-        <div style="display: flex; gap: var(--ct-s3);">
+        <div class="rt-aksi-kanan">
             <x-tombol href="{{ route('profil.index') }}" varian="sekunder">
                 Kembali ke Profil
             </x-tombol>
@@ -194,9 +184,17 @@
 </form>
 
 <script>
+    function pilihDayaPln(daya) {
+        const pw = document.getElementById('power_watt');
+        if (pw) {
+            pw.value = daya;
+            perbaruiKalkulasiRt(document.getElementById('household_size').value, daya);
+        }
+    }
+
     function perbaruiKalkulasiRt(penghuni, watt) {
-        penghuni = parseInt(penghuni) || 1;
-        watt = parseInt(watt) || 0;
+        penghuni = parseInt(penghuni, 10) || 1;
+        watt = parseInt(watt, 10) || 0;
 
         const angkaEl = document.getElementById('angka-penghuni');
         if (angkaEl) angkaEl.textContent = penghuni + ' orang';
@@ -206,7 +204,7 @@
 
         const bebanEl = document.getElementById('simulasi-beban');
         if (bebanEl) {
-            const persen = (100 / penghuni).toFixed(1);
+            const persen = (100 / penghuni).toFixed(1).replace('.', ',');
             bebanEl.textContent = persen + '%';
         }
 

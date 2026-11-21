@@ -24,6 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn () => route('auth.masuk'));
         $middleware->redirectUsersTo(fn () => route('dashboard.index'));
 
+        // Memutus sesi pengguna di perangkat lain seketika apabila akun dinonaktifkan (PBI-01).
+        $middleware->web(append: [
+            \App\Http\Middleware\PastikanAkunAktif314::class,
+        ]);
+
         // Rute JSON yang bisa dicoba lewat Postman atau curl tanpa token CSRF. Masuk, daftar,
         // dan keluar hanya menerima badan JSON, yang tidak bisa dikirim formulir situs lain.
         // Rute api lain sengaja tidak dibebaskan.
