@@ -3,6 +3,25 @@
    Penulis: Rosi Rahmawati (102022400314)
    ========================================================================== */
 
+/* Pastikan modal benar-benar tersembunyi saat ada kelas hidden atau atribut hidden */
+.ct-latar-belakang.hidden,
+.ct-latar-belakang[hidden],
+[hidden] {
+  display: none !important;
+}
+
+.ct-latar-belakang {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 19, 14, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ct-s4);
+}
+
 .rt-wadah {
   max-width: 840px;
   margin: 0 auto;
@@ -20,11 +39,42 @@
   gap: var(--ct-s4);
 }
 
+.rt-ajakan-kosong--profil {
+  margin-bottom: var(--ct-s4);
+}
+
+.rt-ajakan-kosong__judul {
+  margin: 0 0 var(--ct-s1);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ct-text);
+}
+
+.rt-ajakan-kosong__teks {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ct-text-muted);
+}
+
+.rt-ajakan-kosong__aksi {
+  flex-shrink: 0;
+}
+
 @media (max-width: 640px) {
   .rt-ajakan-kosong {
     flex-direction: column;
     text-align: center;
   }
+}
+
+.rt-galat-kotak {
+  background: color-mix(in srgb, var(--ct-danger) 12%, var(--ct-surface));
+  border: 1px solid color-mix(in srgb, var(--ct-danger) 45%, transparent);
+  color: var(--ct-danger);
+  border-radius: var(--ct-r-ctrl);
+  padding: var(--ct-s3) var(--ct-s4);
+  font-size: 14px;
+  margin-bottom: var(--ct-s4);
 }
 
 .rt-catatan {
@@ -42,8 +92,33 @@
   margin-bottom: var(--ct-s5);
 }
 
+.rt-catatan__ikon {
+  color: var(--ct-primary);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
 .rt-catatan strong {
   color: var(--ct-text);
+}
+
+.rt-catatan__paragraf {
+  margin: var(--ct-s1) 0 0;
+}
+
+.rt-catatan__tips {
+  margin: var(--ct-s1) 0 0;
+  color: var(--ct-accent);
+  font-size: 13px;
+}
+
+.rt-grup-isian {
+  margin-bottom: var(--ct-s5);
+}
+
+.rt-keterangan-isian {
+  color: var(--ct-text-muted);
+  font-size: 13px;
 }
 
 /* ---------- Penggeser Angka (Range Slider) ---------- */
@@ -92,7 +167,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 64px;
+  min-width: 84px;
   height: 44px;
   padding: 0 var(--ct-s3);
   background: var(--ct-surface-raised);
@@ -103,11 +178,51 @@
   color: var(--ct-accent);
 }
 
+.rt-penggeser-angka--modal {
+  font-size: 15px;
+  min-width: 80px;
+}
+
+/* ---------- Pilihan Cepat Daya PLN ---------- */
+.rt-pilihan-pln {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--ct-s2);
+}
+
+.rt-pilihan-pln__label {
+  font-size: 12px;
+  color: var(--ct-text-muted);
+  margin-right: var(--ct-s1);
+}
+
+.rt-chip-pln {
+  cursor: pointer;
+  font-size: 11px;
+  padding: 3px 10px;
+  background: var(--ct-surface);
+  border: 1px solid var(--ct-border);
+  color: var(--ct-text-muted);
+  border-radius: var(--ct-r-pill);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.rt-chip-pln:hover {
+  border-color: var(--ct-primary);
+  color: var(--ct-primary);
+}
+
 /* ---------- Kartu Pilihan Kendaraan (Radio Cards) ---------- */
 .rt-kartu-pilihan-kisi {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--ct-s3);
+}
+
+.rt-kartu-pilihan-kisi--dua {
+  grid-template-columns: repeat(2, 1fr);
 }
 
 @media (max-width: 768px) {
@@ -130,6 +245,10 @@
   cursor: pointer;
   transition: all 0.15s ease;
   user-select: none;
+}
+
+.ct-pilihan-kartu--padat {
+  padding: var(--ct-s3);
 }
 
 .ct-pilihan-kartu input[type="radio"] {
@@ -167,6 +286,84 @@
   text-align: center;
 }
 
+.ct-pilihan-kartu__label--kecil {
+  font-size: 13px;
+}
+
+/* ---------- Kartu Simulasi Beban Emisi ---------- */
+.rt-simulasi {
+  background: color-mix(in srgb, var(--ct-primary) 6%, var(--ct-surface));
+  border: 1px dashed var(--ct-primary);
+  border-radius: var(--ct-r-card);
+  margin-bottom: var(--ct-s5);
+  padding: var(--ct-s4);
+}
+
+.rt-simulasi__judul {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 var(--ct-s3);
+  color: var(--ct-accent);
+  display: flex;
+  align-items: center;
+  gap: var(--ct-s2);
+}
+
+.rt-simulasi__kisi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--ct-s3);
+  font-size: 13px;
+}
+
+.rt-simulasi__item {
+  background: var(--ct-surface-raised);
+  padding: var(--ct-s3);
+  border-radius: var(--ct-r-ctrl);
+  border: 1px solid var(--ct-border);
+}
+
+.rt-simulasi__label {
+  color: var(--ct-text-muted);
+}
+
+.rt-simulasi__nilai {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ct-primary);
+  margin-top: 2px;
+}
+
+.rt-simulasi__nilai--aksen {
+  color: var(--ct-accent);
+}
+
+.rt-simulasi__nilai--teks {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ct-text);
+  margin-top: var(--ct-s1);
+  text-transform: capitalize;
+}
+
+.rt-simulasi__sub {
+  color: var(--ct-text-muted);
+  font-size: 11px;
+}
+
+/* ---------- Kerangka Memuat (Skeleton) ---------- */
+.rt-kerangka-wadah {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ct-s4);
+  padding: var(--ct-s4) 0;
+}
+
+.rt-kerangka-wadah.hidden {
+  display: none !important;
+}
+
+/* ---------- Tombol Aksi & Modal ---------- */
 .rt-aksi-tombol {
   display: flex;
   align-items: center;
@@ -177,8 +374,54 @@
   border-top: 1px solid var(--ct-border);
 }
 
+.rt-aksi-kanan {
+  display: flex;
+  gap: var(--ct-s3);
+}
+
+.rt-tombol-hapus-teks {
+  color: var(--ct-danger);
+}
+
+.rt-modal-deskripsi {
+  color: var(--ct-text-muted);
+  font-size: 14px;
+  margin: 0 0 var(--ct-s4);
+  line-height: 1.6;
+}
+
+.rt-modal-kaki {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ct-s3);
+  border-top: 1px solid var(--ct-border);
+  padding-top: var(--ct-s4);
+}
+
+/* ---------- Spinner Memuat pada Tombol ---------- */
+.ct-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ct-putar 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes ct-putar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 640px) {
   .rt-aksi-tombol {
     flex-direction: column-reverse;
+  }
+  .rt-aksi-kanan {
+    width: 100%;
+    flex-direction: column;
   }
 }

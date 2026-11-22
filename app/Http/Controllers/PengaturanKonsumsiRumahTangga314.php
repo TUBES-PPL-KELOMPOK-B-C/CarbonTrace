@@ -58,10 +58,14 @@ class PengaturanKonsumsiRumahTangga314 extends Controller
         $user = $request->user();
         $setting = $user->setting;
 
-        if ($setting) {
-            Gate::authorize('delete', $setting);
-            $setting->delete();
+        if (! $setting) {
+            return redirect()->route('rumah.index')->withErrors([
+                'hapus_rumah' => 'Belum ada data rumah tangga yang tersimpan untuk dihapus.',
+            ]);
         }
+
+        Gate::authorize('delete', $setting);
+        $setting->delete();
 
         return redirect()->route('rumah.index')->with('sukses', 'Data rumah tangga berhasil dihapus. Emisi listrik akan dihitung penuh.');
     }

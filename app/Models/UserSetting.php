@@ -2,27 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-class UserSetting extends Model
+/**
+ * Alias kompatibilitas untuk modul lain yang merujuk App\Models\UserSetting.
+ * Sumber kebenaran tunggal berada pada App\Models\UserSetting314.
+ */
+class UserSetting extends UserSetting314
 {
-    use HasFactory;
-
-    protected $table = 'user_settings';
-
-    protected $fillable = [
-        'user_id',
-        'household_size',
-    ];
-
-    protected $casts = [
-        'household_size' => 'integer',
-    ];
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User314::class, 'user_id');
-    }
 }
