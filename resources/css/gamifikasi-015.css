@@ -1,0 +1,145 @@
+/* Modul Gamifikasi (Man-015) — PBI-13 Manajemen Lencana.
+   Token --ct-* berasal dari app.css; berkas ini hanya menambah komponen lencana. */
+
+/* Kisi kartu lencana: enam kolom di 1440px, empat di 768px, tiga di 375px. */
+.ct-lencana-kisi {
+    display: grid;
+    gap: var(--ct-s4);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+    .ct-lencana-kisi { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+    .ct-lencana-kisi { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+/* Kisi admin memuat tombol aksi, jadi kartunya lebih lebar daripada kartu galeri. */
+.ct-lencana-kisi--admin { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+
+@media (min-width: 768px) {
+    .ct-lencana-kisi--admin { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+    .ct-lencana-kisi--admin { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.ct-lencana {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ct-s2);
+    padding: var(--ct-s4) var(--ct-s3);
+    background: var(--ct-surface);
+    border: 1px solid var(--ct-border);
+    border-radius: var(--ct-r-card);
+    text-align: center;
+}
+
+.ct-lencana__cakram {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--ct-primary) 16%, transparent);
+    color: var(--ct-primary);
+    position: relative;
+}
+
+.ct-lencana__cakram svg { width: 32px; height: 32px; }
+
+.ct-lencana__nama {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ct-text);
+    margin: 0;
+}
+
+.ct-lencana__syarat,
+.ct-lencana__tanggal {
+    font-size: 12px;
+    color: var(--ct-text-muted);
+    margin: 0;
+}
+
+/* Keadaan terkunci: abu-abu DAN disebut dalam teks, supaya tidak hanya bergantung warna. */
+.ct-lencana--terkunci { background: var(--ct-bg-alt); }
+
+.ct-lencana--terkunci .ct-lencana__cakram {
+    background: color-mix(in srgb, var(--ct-text-muted) 18%, transparent);
+    color: var(--ct-text-muted);
+    filter: grayscale(1);
+}
+
+.ct-lencana__gembok {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--ct-surface);
+    border: 1px solid var(--ct-border);
+    color: var(--ct-text-muted);
+}
+
+.ct-lencana__gembok svg { width: 12px; height: 12px; }
+
+/* Keadaan nonaktif, hanya terlihat di kisi admin. */
+.ct-lencana--nonaktif { opacity: 0.6; }
+
+.ct-kemajuan {
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--ct-text-muted) 22%, transparent);
+    overflow: hidden;
+}
+
+.ct-kemajuan__batang {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--ct-primary);
+}
+
+.ct-lencana__aksi {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--ct-s2);
+    margin-top: var(--ct-s2);
+}
+
+/* Perayaan lencana baru. Dimatikan sepenuhnya kalau pengguna memilih kurangi gerak. */
+.ct-konfeti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 60;
+}
+
+.ct-konfeti span {
+    position: absolute;
+    top: -12px;
+    width: 8px;
+    height: 14px;
+    border-radius: 2px;
+    animation: ct-konfeti-turun 2.4s linear forwards;
+}
+
+@keyframes ct-konfeti-turun {
+    to { transform: translateY(105vh) rotate(540deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ct-konfeti { display: none; }
+    .ct-konfeti span { animation: none; }
+}

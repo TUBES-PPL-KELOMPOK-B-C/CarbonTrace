@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             // Modul Target dan Pengingat (Alvin-022)
             ManajemenTargetEmisiBulananSeeder022::class,
             PengingatPencatatanHarianSeeder022::class,
+            // Modul Gamifikasi (Man-015)
+            ManajemenLencanaSeeder015::class,
         ]);
     }
 }

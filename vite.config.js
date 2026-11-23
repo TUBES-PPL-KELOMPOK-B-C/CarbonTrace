@@ -20,6 +20,7 @@ export default defineConfig({
                 'resources/css/target-pengingat-022.css',
                 'resources/js/target-pengingat-022.js',
                 'resources/css/profil-314.css',
+                'resources/css/gamifikasi-015.css',
             ],
             refresh: true,
             fonts: [
