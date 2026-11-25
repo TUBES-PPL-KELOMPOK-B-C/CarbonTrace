@@ -134,7 +134,7 @@ Contoh: 4 kWh × 0,681 kg CO2e/kWh = **2,72 kg CO2e**. Pembagian jumlah penghuni
 
 ## Menjalankan di Komputer Sendiri
 
-**Kebutuhan:** PHP 8.3 atau lebih baru, Composer, Node.js 22, dan MySQL 8. Di Windows, [Laragon](https://laragon.org) sudah menyediakan PHP dan MySQL.
+**Kebutuhan:** PHP 8.3 atau lebih baru, Composer, Node.js 22, dan MySQL 8 atau SQLite. Di Windows, [Laragon](https://laragon.org) sudah menyediakan PHP dan MySQL. Pengaturan basis data ada di `.env`.
 
 1. Unduh proyek dan pasang paketnya.
 
@@ -152,19 +152,7 @@ Contoh: 4 kWh × 0,681 kg CO2e/kWh = **2,72 kg CO2e**. Pembagian jumlah penghuni
    php artisan key:generate
    ```
 
-3. Buat basis data `carbontrace` di MySQL, lalu sesuaikan bagian ini di `.env`.
-
-   ```env
-   APP_NAME=CarbonTrace
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=carbontrace
-   DB_USERNAME=root
-   DB_PASSWORD=
-   ```
-
-4. Buat tabel beserta data contoh, lalu jalankan.
+3. Buat tabel beserta data contoh, lalu jalankan.
 
    ```bash
    php artisan migrate --seed
@@ -232,14 +220,80 @@ Sebagian besar berkas berakhiran tiga angka yang menandai pembuatnya, misalnya `
 
 ## Tim
 
-| Nama | Peran | Modul |
-|---|---|---|
-| Alvin Hibatullah | Ketua, Scrum Master, Developer | Target, Pengingat, dan Laporan |
-| Hadi Dwi Pranoto | Product Owner, Front-End Lead, Developer | Pencatatan Aktivitas |
-| Renaya Marvela Adoe | Quality Assurance, Developer | Data Master Emisi |
-| Rosi Rahmawati | Developer | Akun dan Administrasi |
-| Man Rezki Setiawan | Developer | Gamifikasi |
-| Tio Maria Anggita Sinaga | Developer | Edukasi dan Komunitas |
+Keterangan status: ✅ selesai · 🟡 sebagian · ⬜ belum
+
+### Alvin Hibatullah
+
+Ketua, Scrum Master, Developer. Penanggung jawab modul Target, Pengingat, dan Laporan, modul Pencatatan Aktivitas, serta seluruh fitur pendukung.
+
+| Kode | Pekerjaan | Status | Catatan |
+|---|---|:---:|---|
+| PBI-10 | Manajemen Target Emisi Bulanan | ✅ | |
+| PBI-11 | Pengingat Pencatatan Harian | ✅ | |
+| PBI-12 | Laporan Jejak Karbon | 🟡 | Unduhan PDF menyusul |
+| PBI-04 | Pencatatan Aktivitas Emisi Harian | ✅ | Dilanjutkan dari Hadi Dwi Pranoto |
+| PBI-05 | Template Aktivitas Rutin | ✅ | Dilanjutkan dari Hadi Dwi Pranoto |
+| PBI-06 | Manajemen Bank Pertanyaan Kuis | ✅ | Dilanjutkan dari Hadi Dwi Pranoto |
+| KF-01 | Registrasi, login, logout, dan lupa kata sandi | ✅ | |
+| KF-04 | Manajemen Pengguna dan Peran | ✅ | Kode awal oleh Rosi Rahmawati |
+| KF-20 | Perhitungan Emisi Otomatis | ✅ | |
+| KF-21 | Dashboard Jejak Karbon | ✅ | |
+| KF-22 | Grafik Tren Emisi | ⬜ | |
+| KF-23 | Rincian Emisi per Kategori | ⬜ | |
+| KF-24 | Kalkulator Jejak Karbon Publik | ✅ | |
+| KF-25 | Kuis Awal dan Garis Dasar | ⬜ | |
+| KF-27 | Statistik Dampak Komunitas | ⬜ | |
+
+### Hadi Dwi Pranoto
+
+Product Owner, Front-End Lead, Developer.
+
+> **Catatan:** Hadi pindah kampus ke STAN. PBI-04, PBI-05, dan PBI-06 dilanjutkan oleh Alvin Hibatullah.
+
+| Kode | Pekerjaan | Status | Catatan |
+|---|---|:---:|---|
+| PBI-04, PBI-05, PBI-06 | Modul Pencatatan Aktivitas | ✅ | Kode awal oleh Hadi, kini dipegang Alvin |
+
+### Renaya Marvela Adoe
+
+Quality Assurance, Developer. Modul Data Master Emisi.
+
+| Kode | Pekerjaan | Status |
+|---|---|:---:|
+| PBI-07 | Manajemen Kategori Emisi | ✅ |
+| PBI-08 | Manajemen Faktor Emisi | ✅ |
+| PBI-09 | Manajemen Acuan Konversi Satuan | ✅ |
+
+### Rosi Rahmawati
+
+Developer. Modul Akun dan Administrasi.
+
+| Kode | Pekerjaan | Status |
+|---|---|:---:|
+| PBI-01 | Manajemen Profil Pengguna | ✅ |
+| PBI-02 | Pengaturan Konsumsi Rumah Tangga | ✅ |
+| PBI-20 | Papan Peringkat Komunitas | ✅ |
+
+### Man Rezki Setiawan
+
+Developer. Modul Gamifikasi.
+
+| Kode | Pekerjaan | Status | Catatan |
+|---|---|:---:|---|
+| PBI-13 | Manajemen Lencana | 🟡 | Di branch `Mann`, belum digabung |
+| PBI-14 | Manajemen Tantangan | ⬜ | |
+| PBI-15 | Keikutsertaan Tantangan | ⬜ | |
+
+### Tio Maria Anggita Sinaga
+
+Developer. Modul Edukasi dan Komunitas.
+
+| Kode | Pekerjaan | Status | Catatan |
+|---|---|:---:|---|
+| PBI-16 | Manajemen Artikel Edukasi | 🟡 | Tampilannya belum ada |
+| PBI-17 | Manajemen Rekomendasi Aksi | ⬜ | |
+| PBI-18 | Manajemen Pengumuman | ⬜ | |
+| PBI-19 | Manajemen Balasan Artikel | ⬜ | |
 
 ## Berkontribusi
 
