@@ -224,7 +224,7 @@ Keterangan status: ✅ selesai · 🟡 sebagian · ⬜ belum
 
 ### Alvin Hibatullah
 
-Ketua, Scrum Master, Developer. Penanggung jawab modul Target, Pengingat, dan Laporan, modul Pencatatan Aktivitas, serta seluruh fitur pendukung.
+Ketua, Scrum Master, Developer, QA. Penanggung jawab modul Target, Pengingat, dan Laporan, modul Pencatatan Aktivitas, serta seluruh fitur pendukung.
 
 | Kode | Pekerjaan | Status | Catatan |
 |---|---|:---:|---|
