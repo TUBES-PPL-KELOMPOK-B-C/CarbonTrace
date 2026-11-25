@@ -30,7 +30,9 @@ class RingkasanDashboard111
     {
         $hariIni ??= Carbon::now(self::ZONA_WAKTU)->startOfDay();
         // Satu kueri untuk mengetahui tabel mana yang sudah ada, bukan satu kueri per tabel.
-        $this->tabel = array_fill_keys(Schema::getTableListing(schemaQualified: false), true);
+        // Hanya tabel di database aplikasi ini; tanpa nama skema, MySQL ikut mendaftar tabel dari
+        // database lain di server yang sama (mis. proyek lain di Laragon).
+        $this->tabel = array_fill_keys(Schema::getTableListing(Schema::getCurrentSchemaListing(), schemaQualified: false), true);
 
         $emisi = $this->bagian(fn () => $this->emisi($pengguna, $hariIni));
 
@@ -78,7 +80,7 @@ class RingkasanDashboard111
 
         // Rumusnya milik PBI-10 (RingkasanTarget022), supaya angka di dashboard selalu sama dengan
         // angka di halaman target.
-        $ringkasan = app(RingkasanTarget022::class);
+        $ringkasan = app(RingkasanTarget022::class)->denganTabelAktivitas($this->ada('activities'));
         $target = $ringkasan->berjalan($pengguna);
 
         return $target ? $ringkasan->ringkas($target) : null;

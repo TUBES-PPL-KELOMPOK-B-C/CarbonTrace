@@ -151,6 +151,9 @@ body {
   position:fixed; inset:0; background:rgba(6, 19, 14, 0.8); backdrop-filter:blur(4px);
   z-index:40; display:flex; align-items:center; justify-content:center; padding:var(--ct-s4);
 }
+/* Gaya di luar @layer selalu mengalahkan utilitas Tailwind, termasuk "hidden". Tanpa baris ini
+   modal dan panel geser tampil sejak halaman dimuat dan tombol tutup/Batal tidak berfungsi. */
+.ct-latar-belakang.hidden { display:none; }
 .ct-modal {
   background:var(--ct-surface-raised); border:1px solid var(--ct-border);
   border-radius:var(--ct-r-card); width:100%; max-width:480px; padding:var(--ct-s6);

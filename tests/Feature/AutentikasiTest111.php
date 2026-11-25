@@ -168,6 +168,20 @@ class AutentikasiTest111 extends TestCase
         $this->assertGuest();
     }
 
+    public function test_akun_yang_dinonaktifkan_saat_masuk_dikeluarkan_pada_permintaan_berikutnya(): void
+    {
+        $pengguna = User::factory()->create();
+        $this->actingAs($pengguna)->get(route('dashboard.index'))->assertOk();
+
+        $pengguna->forceFill(['is_active' => false])->save();
+
+        // Diputus oleh middleware PastikanAkunAktif314 (PBI-01, Rosi)
+        $this->get(route('dashboard.index'))
+            ->assertRedirect(route('auth.masuk'))
+            ->assertSessionHasErrors('email');
+        $this->assertGuest();
+    }
+
     public function test_keluar_mengakhiri_sesi(): void
     {
         $this->actingAs(User::factory()->create())
