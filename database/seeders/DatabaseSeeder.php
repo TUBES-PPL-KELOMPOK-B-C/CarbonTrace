@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             // Modul Target dan Pengingat (Alvin-022)
             ManajemenTargetEmisiBulananSeeder022::class,
             PengingatPencatatanHarianSeeder022::class,
+            LaporanJejakKarbonSeeder022::class,
         ]);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LaporanJejakKarbon022;
 use App\Http\Controllers\ManajemenTargetEmisiBulanan022;
 use App\Http\Controllers\PengingatPencatatanHarian022;
 use Illuminate\Support\Facades\Route;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 | Modul Target, Pengingat, dan Laporan (Alvin Hibatullah - 102022430022)
 | PBI-10 Manajemen Target Emisi Bulanan
 | PBI-11 Pengingat Pencatatan Harian
+| PBI-12 Laporan Jejak Karbon
 |--------------------------------------------------------------------------
 */
 
@@ -26,4 +28,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/pengingat/{pengingat}', [PengingatPencatatanHarian022::class, 'update'])->name('pengingat.update');
     Route::patch('/pengingat/{pengingat}/saklar', [PengingatPencatatanHarian022::class, 'saklar'])->name('pengingat.saklar');
     Route::delete('/pengingat/{pengingat}', [PengingatPencatatanHarian022::class, 'destroy'])->name('pengingat.destroy');
+
+    // PBI-12 (KF-13)
+    Route::get('/laporan', [LaporanJejakKarbon022::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/susun', [LaporanJejakKarbon022::class, 'create'])->name('laporan.create');
+    Route::post('/laporan', [LaporanJejakKarbon022::class, 'store'])->name('laporan.store');
+    Route::get('/laporan/{laporan}', [LaporanJejakKarbon022::class, 'show'])->whereNumber('laporan')->name('laporan.show');
+    Route::put('/laporan/{laporan}', [LaporanJejakKarbon022::class, 'update'])->whereNumber('laporan')->name('laporan.update');
+    Route::delete('/laporan/{laporan}', [LaporanJejakKarbon022::class, 'destroy'])->whereNumber('laporan')->name('laporan.destroy');
+    Route::post('/api/laporan/pratinjau', [LaporanJejakKarbon022::class, 'pratinjau'])->name('laporan.pratinjau');
 });

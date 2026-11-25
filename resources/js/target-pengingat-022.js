@@ -244,3 +244,79 @@ document.querySelectorAll('[data-roda-jam]').forEach((roda) => {
         }
     }).observe(roda);
 });
+
+// PBI-12: pratinjau laporan ikut berubah saat rentang tanggal atau kategori diubah
+const pratinjau = document.querySelector('[data-pratinjau]');
+const formLaporan = document.querySelector('[data-form-laporan]');
+
+if (pratinjau && formLaporan) {
+    const angkaId = (n, d = 2) => new Intl.NumberFormat('id-ID', { minimumFractionDigits: d, maximumFractionDigits: d }).format(n);
+    const isi = (kunci, teks) => { pratinjau.querySelector(`[data-${kunci}]`).textContent = teks; };
+    const tampilkan = (keadaan) => pratinjau.querySelectorAll('[data-keadaan]').forEach((el) => { el.hidden = el.dataset.keadaan !== keadaan; });
+
+    const gambar = (d) => {
+        isi('total', angkaId(d.total));
+        isi('rata', angkaId(d.rata_harian));
+        isi('jumlah', d.jumlah_catatan);
+        isi('halaman', d.perkiraan_halaman);
+        pratinjau.querySelector('[data-tanpa-catatan]').hidden = d.jumlah_catatan > 0;
+
+        const puncak = Math.max(...d.tren.map((t) => t.emisi)) || 1;
+        pratinjau.querySelector('[data-garis]').setAttribute('points', d.tren.map((t, i) =>
+            `${d.tren.length > 1 ? (i / (d.tren.length - 1)) * 600 : 300},${150 - (t.emisi / puncak) * 140}`).join(' '));
+
+        pratinjau.querySelector('[data-baris]').replaceChildren(...d.per_kategori.map((k) => {
+            const baris = document.createElement('tr');
+            [['Kategori', k.nama, ''], ['Emisi (kg)', angkaId(k.emisi), 'angka'], ['Porsi', `${angkaId(k.persen, 1)}%`, 'angka']].forEach(([label, teks, kelas]) => {
+                const sel = document.createElement('td');
+                sel.dataset.label = label;
+                sel.className = kelas;
+                sel.textContent = teks;
+                baris.append(sel);
+            });
+            return baris;
+        }));
+    };
+
+    let urutan = 0; // jawaban lama yang datang terlambat diabaikan
+    const muat = async () => {
+        const ke = ++urutan;
+        const data = new FormData(formLaporan);
+        formLaporan.querySelectorAll('[data-galat]').forEach((p) => { p.textContent = ''; });
+        tampilkan('memuat');
+
+        try {
+            const jawaban = await fetch(formLaporan.dataset.api, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': data.get('_token') },
+                body: JSON.stringify({ period_start: data.get('period_start'), period_end: data.get('period_end'), kategori: data.getAll('kategori[]') }),
+            });
+            const d = await jawaban.json();
+            if (ke !== urutan) return;
+
+            if (jawaban.status === 422) {
+                Object.entries(d.errors).forEach(([kolom, pesan]) => {
+                    const galat = formLaporan.querySelector(`[data-galat="${kolom}"]`);
+                    if (galat) [galat.textContent] = pesan;
+                });
+                isi('pesan', 'Perbaiki isian di formulir untuk melihat pratinjau.');
+                tampilkan('galat');
+                return;
+            }
+            if (!jawaban.ok) throw new Error(String(jawaban.status));
+            gambar(d);
+            tampilkan('isi');
+        } catch {
+            if (ke !== urutan) return;
+            isi('pesan', 'Pratinjau gagal dimuat.');
+            tampilkan('galat');
+        }
+    };
+
+    let jeda;
+    const tunda = () => { clearTimeout(jeda); jeda = setTimeout(muat, 300); };
+    formLaporan.addEventListener('change', (e) => { if (e.target.name !== 'title') tunda(); });
+    formLaporan.querySelectorAll('[data-mulai]').forEach((tombol) => tombol.addEventListener('click', tunda));
+    pratinjau.querySelector('[data-coba-lagi]').addEventListener('click', muat);
+    muat();
+}
