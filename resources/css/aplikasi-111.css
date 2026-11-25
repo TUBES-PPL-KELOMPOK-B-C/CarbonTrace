@@ -75,6 +75,28 @@
 .ap-menu__tautan--nanti { opacity: .45; cursor: not-allowed; }
 .ap-menu__tautan--nanti:hover { background: none; color: var(--ct-text-muted); }
 
+/* menu bertingkat (drill-down): <details> terbuka sendiri bila salah satu isinya sedang dibuka */
+.ap-kelompok > summary { list-style: none; }
+.ap-kelompok > summary::-webkit-details-marker { display: none; }
+.ap-kelompok__panah { width: 16px; height: 16px; margin-left: auto; transition: rotate .15s ease; }
+.ap-kelompok[open] > summary .ap-kelompok__panah { rotate: 90deg; }
+.ap-menu__tautan--induk-aktif { color: var(--ct-text); }
+.ap-menu__tautan--induk-aktif .ap-ikon:first-child { color: var(--ct-primary); }
+.ap-submenu {
+  display: flex; flex-direction: column; gap: 2px;
+  margin: 2px 0 var(--ct-s1) var(--ct-s5);
+  padding: 0 0 0 var(--ct-s2);
+  border-left: 1px solid var(--ct-border);
+  list-style: none;
+}
+.ap-submenu .ap-menu__tautan { height: 38px; font-size: 13px; }
+.ap-submenu .ap-ikon { width: 16px; height: 16px; }
+.ap-menu__kelompok-judul {
+  margin: var(--ct-s5) 0 var(--ct-s2); padding: 0 var(--ct-s3);
+  font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ct-text-muted);
+}
+
 .ap-keluar { margin-top: auto; }
 
 /* ---------- bilah atas dan isi ---------- */
@@ -134,6 +156,11 @@
     clip: rect(0 0 0 0); white-space: nowrap;
   }
   .ap-menu__tautan { justify-content: center; width: 48px; padding: 0; }
+  /* mode ikon: subfitur tetap berupa ikon di bawah induknya, tanpa garis indentasi dan panah */
+  .ap-kelompok__panah { display: none; }
+  .ap-submenu { margin: 2px 0 var(--ct-s1); padding: 0; border-left: 0; }
+  .ap-submenu .ap-menu__tautan { width: 48px; }
+  .ap-menu__kelompok-judul { padding: 0; text-align: center; font-size: 9px; }
 }
 
 /* 375px: menu bawah lima ikon, isi satu kolom */

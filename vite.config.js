@@ -16,6 +16,7 @@ export default defineConfig({
                 'resources/css/kalkulator-111.css',
                 'resources/js/kalkulator-111.js',
                 'resources/css/aplikasi-111.css',
+                'resources/js/aplikasi-111.js',
                 'resources/css/dashboard-111.css',
                 'resources/css/target-pengingat-022.css',
                 'resources/js/target-pengingat-022.js',
