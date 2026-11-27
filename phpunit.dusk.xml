@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Konfigurasi tes browser Laravel Dusk (branch Test_Dusk). Dipakai otomatis oleh "php artisan dusk".
+     Proses tes dan server tes (dijalankan DuskTestCase di port 8001) sama-sama memakai database
+     SQLite database/dusk.sqlite, jadi database MySQL pengembangan tidak pernah tersentuh. -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true">
+    <testsuites>
+        <testsuite name="Browser">
+            <directory>tests/Browser</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <!-- PENTING: "php artisan dusk" meneruskan isi .env (DB_CONNECTION=mysql) ke proses tes sebagai
+             variabel lingkungan sungguhan, yang dibaca Laravel lewat $_SERVER lebih dulu daripada <env>.
+             Karena itu nilai basis data juga dipasang sebagai <server>. DB_HOST sengaja dibuat tidak ada,
+             jadi seandainya koneksi tetap jatuh ke MySQL, tes gagal tersambung, bukan menghapus data.
+             DuskTestCase::createApplication() juga menghentikan tes bila basis datanya bukan dusk.sqlite. -->
+        <server name="APP_ENV" value="dusk" force="true"/>
+        <server name="DB_CONNECTION" value="sqlite" force="true"/>
+        <server name="DB_DATABASE" value="database/dusk.sqlite" force="true"/>
+        <server name="DB_URL" value="" force="true"/>
+        <server name="DB_HOST" value="mysql-dilarang-untuk-dusk.invalid" force="true"/>
+        <server name="MAIL_MAILER" value="log" force="true"/>
+        <env name="DB_HOST" value="mysql-dilarang-untuk-dusk.invalid" force="true"/>
+        <env name="APP_ENV" value="dusk" force="true"/>
+        <env name="APP_URL" value="http://127.0.0.1:8001" force="true"/>
+        <env name="BCRYPT_ROUNDS" value="4" force="true"/>
+        <env name="CACHE_STORE" value="array" force="true"/>
+        <env name="DB_CONNECTION" value="sqlite" force="true"/>
+        <env name="DB_DATABASE" value="database/dusk.sqlite" force="true"/>
+        <env name="DB_URL" value="" force="true"/>
+        <env name="MAIL_MAILER" value="log" force="true"/>
+        <env name="QUEUE_CONNECTION" value="sync" force="true"/>
+        <env name="SESSION_DRIVER" value="file" force="true"/>
+    </php>
+</phpunit>

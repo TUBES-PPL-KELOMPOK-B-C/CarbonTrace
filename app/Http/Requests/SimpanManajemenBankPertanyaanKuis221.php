@@ -8,7 +8,7 @@ class SimpanManajemenBankPertanyaanKuis221 extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->is_admin ?? false);
+        return auth()->check() && (auth()->user()->hasAnyRole(['admin', 'administrator']) || (auth()->user()->is_admin ?? false));
     }
 
     public function rules(): array

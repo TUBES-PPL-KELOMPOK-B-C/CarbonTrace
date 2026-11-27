@@ -103,3 +103,35 @@ if (akunTab.id) {
         form.addEventListener('submit', () => kabarkanAkun({ id: null }));
     });
 }
+
+// Menu titik tiga (komponen bersama .ct-menu-titik-tiga) di dalam .ct-tabel-wadah: wadah itu bergulir
+// mendatar (overflow-x:auto), sehingga menu pada baris terakhir terpotong dan tombol Hapus nyaris tak
+// terlihat. Saat menu terbuka, posisinya dihitung terhadap layar (position: fixed) supaya keluar dari
+// potongan wadah; bila ruang di bawah tidak cukup, menu dibuka ke atas.
+const letakkanMenu = (menu) => {
+    if (menu.classList.contains('hidden')) {
+        menu.style.cssText = '';
+        return;
+    }
+    const tombol = menu.parentElement.querySelector('button');
+    if (!tombol) return;
+    const kotak = tombol.getBoundingClientRect();
+    menu.style.position = 'fixed';
+    menu.style.right = `${Math.max(8, window.innerWidth - kotak.right)}px`;
+    menu.style.left = 'auto';
+    const tinggi = menu.offsetHeight;
+    const atas = kotak.bottom + 4 + tinggi > window.innerHeight ? kotak.top - 4 - tinggi : kotak.bottom + 4;
+    menu.style.top = `${Math.max(8, atas)}px`;
+    menu.style.marginTop = '0';
+};
+
+document.querySelectorAll('.ct-menu-titik-tiga__dropdown').forEach((menu) => {
+    new MutationObserver(() => letakkanMenu(menu)).observe(menu, { attributes: true, attributeFilter: ['class'] });
+});
+// Saat halaman atau tabel digulir, menu yang terbuka ikut berpindah bersama tombolnya.
+window.addEventListener('scroll', () => {
+    document.querySelectorAll('.ct-menu-titik-tiga__dropdown:not(.hidden)').forEach(letakkanMenu);
+}, { capture: true, passive: true });
+window.addEventListener('resize', () => {
+    document.querySelectorAll('.ct-menu-titik-tiga__dropdown:not(.hidden)').forEach(letakkanMenu);
+});

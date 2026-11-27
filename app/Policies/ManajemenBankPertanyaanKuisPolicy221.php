@@ -9,7 +9,8 @@ class ManajemenBankPertanyaanKuisPolicy221
 {
     private function isAdmin(User $user): bool
     {
-        return $user->hasRole('admin') || ($user->is_admin ?? false);
+        // "admin" (Modul 2) dan "administrator" (modul Akun, juga hasil serah terima admin) sama-sama dikenali
+        return $user->hasAnyRole(['admin', 'administrator']) || ($user->is_admin ?? false);
     }
 
     public function viewAny(User $user): bool
