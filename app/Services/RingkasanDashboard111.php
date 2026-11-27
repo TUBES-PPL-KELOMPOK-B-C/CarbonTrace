@@ -50,11 +50,20 @@ class RingkasanDashboard111
     private function emisi(User $pengguna, Carbon $hariIni): array
     {
         if (! $this->ada('activities')) {
-            return ['hariIni' => 0.0, 'bulanIni' => 0.0, 'jumlahCatatan' => 0];
+            return ['hariIni' => 0.0, 'bulanIni' => 0.0, 'jumlahCatatan' => 0, 'garisDasar' => null, 'soalKuis' => 0];
         }
 
-        $baris = DB::table('activities')
-            ->where('user_id', $pengguna->id)
+        $kueri = DB::table('activities')
+            ->where('user_id', $pengguna->id);
+
+        // KF-25: garis dasar kuis awal ikut dihitung di kueri yang sama lewat subkueri.
+        $adaKuis = $this->ada('onboarding_results') && $this->ada('quiz_questions');
+        if ($adaKuis) {
+            $kueri->selectRaw('(SELECT SUM(o.score) FROM onboarding_results o JOIN quiz_questions q ON q.id = o.quiz_question_id AND q.is_active = ? WHERE o.user_id = ?) as garis_dasar', [true, $pengguna->id])
+                ->selectRaw('(SELECT COUNT(*) FROM quiz_questions WHERE is_active = ?) as soal_kuis', [true]);
+        }
+
+        $baris = $kueri
             ->selectRaw('COUNT(*) as jumlah')
             ->selectRaw('COALESCE(SUM(CASE WHEN activity_date = ? THEN emission ELSE 0 END), 0) as hari_ini', [$hariIni->toDateString()])
             ->selectRaw('COALESCE(SUM(CASE WHEN activity_date BETWEEN ? AND ? THEN emission ELSE 0 END), 0) as bulan_ini', [
@@ -67,6 +76,8 @@ class RingkasanDashboard111
             'hariIni' => (float) $baris->hari_ini,
             'bulanIni' => (float) $baris->bulan_ini,
             'jumlahCatatan' => (int) $baris->jumlah,
+            'garisDasar' => $adaKuis && $baris->garis_dasar !== null ? round((float) $baris->garis_dasar, 2) : null,
+            'soalKuis' => $adaKuis ? (int) $baris->soal_kuis : 0,
         ];
     }
 

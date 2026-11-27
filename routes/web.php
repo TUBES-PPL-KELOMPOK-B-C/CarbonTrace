@@ -7,6 +7,7 @@ require __DIR__.'/modul-autentikasi-111.php';
 require __DIR__.'/modul-kalkulator-publik-111.php';
 require __DIR__.'/modul-dashboard-111.php';
 require __DIR__.'/modul-notifikasi-111.php';
+require __DIR__.'/modul-kuis-awal-111.php';
 require __DIR__.'/modul-target-pengingat-dan-laporan-022.php';
 require __DIR__.'/modul-edukasi-dan-komunitas-365.php';
 require __DIR__.'/modul-pencatatan-aktivitas-221.php';

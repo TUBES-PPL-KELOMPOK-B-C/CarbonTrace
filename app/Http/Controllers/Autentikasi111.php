@@ -36,6 +36,11 @@ class Autentikasi111 extends Controller
                 ->with('galat_masuk', $galat[0]);
         }
 
+        // KF-25: pengguna yang belum pernah mengisi (dan tidak memilih melewati) diarahkan ke kuis awal.
+        if (app(\App\Services\KuisAwal111::class)->perluDiisi($request->user())) {
+            return redirect()->route('kuis-awal.mulai');
+        }
+
         return redirect()->intended(route('dashboard.index'));
     }
 
