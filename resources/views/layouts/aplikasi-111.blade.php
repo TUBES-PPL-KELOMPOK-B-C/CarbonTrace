@@ -216,10 +216,12 @@
                             @endif
                         </div>
                         @forelse ($daftarNotifikasi as $n)
-                            @php $pengingatKah = ($n->data['jenis'] ?? '') === 'pengingat'; @endphp
+                            @php $jenis = in_array($n->data['jenis'] ?? '', ['pengingat', 'admin'], true) ? $n->data['jenis'] : 'pengisian'; @endphp
                             <a href="{{ route('notifikasi.buka', $n->id) }}" class="ap-notif__butir {{ $n->read_at ? '' : 'ap-notif__butir--baru' }}">
-                                <span class="ap-notif__ikon ap-notif__ikon--{{ $pengingatKah ? 'pengingat' : 'pengisian' }}" aria-hidden="true">
-                                    @if ($pengingatKah)
+                                <span class="ap-notif__ikon ap-notif__ikon--{{ $jenis }}" aria-hidden="true">
+                                    @if ($jenis === 'admin')
+                                        <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+                                    @elseif ($jenis === 'pengingat')
                                         <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="13" r="7"/><path d="M12 9v4l2 2M5 4 2 7M19 4l3 3"/></svg>
                                     @else
                                         <svg viewBox="0 0 24 24" focusable="false"><path d="m5 12 5 5L20 7"/></svg>

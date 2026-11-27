@@ -18,6 +18,8 @@ class Autentikasi111 extends Controller
 {
     private const PESAN_SALAH = 'Email atau kata sandi salah.';
     private const PESAN_NONAKTIF = 'Akun ini dinonaktifkan. Hubungi administrator.';
+    private const PESAN_BUKAN_ADMIN = 'Akun ini bukan akun administrator. Pilih "Pengguna" untuk masuk.';
+    private const PESAN_AKUN_ADMIN = 'Ini akun administrator. Pilih "Administrator" untuk masuk.';
     private const PERAN_BAWAAN = 'user';
     private const BATAS_GAGAL = 5;
     private const LAMA_KUNCI_DETIK = 60;
@@ -32,7 +34,7 @@ class Autentikasi111 extends Controller
     {
         if ($galat = $this->cobaMasuk($request)) {
             return back()
-                ->withInput($request->only('email', 'ingat'))
+                ->withInput($request->only('email', 'ingat', 'sebagai'))
                 ->with('galat_masuk', $galat[0]);
         }
 
@@ -113,11 +115,17 @@ class Autentikasi111 extends Controller
         $kredensial = $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            // Pilihan "Masuk sebagai" di halaman masuk. Opsional, supaya versi JSON lama tetap jalan.
+            'sebagai' => ['nullable', 'in:pengguna,administrator'],
         ], [
+            'sebagai.in' => 'Pilihan masuk tidak dikenal.',
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email belum benar.',
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
+
+        $sebagai = $kredensial['sebagai'] ?? null;
+        unset($kredensial['sebagai']);
 
         // 5 kali salah untuk email yang sama dari IP yang sama: dikunci 1 menit.
         // Hanya percobaan gagal yang dihitung, dan hitungan direset setelah berhasil masuk.
@@ -141,6 +149,17 @@ class Autentikasi111 extends Controller
             $this->akhiriSesi($request);
 
             return [self::PESAN_NONAKTIF, 403];
+        }
+
+        // Pilihan "Masuk sebagai" harus cocok dengan peran akun. Sandinya sudah benar, jadi tidak
+        // dihitung sebagai percobaan gagal; pengguna cukup memilih jenis masuk yang tepat.
+        if ($sebagai) {
+            $admin = Auth::user()->hasAnyRole(['administrator', 'admin']);
+            if ($admin !== ($sebagai === 'administrator')) {
+                $this->akhiriSesi($request);
+
+                return [$admin ? self::PESAN_AKUN_ADMIN : self::PESAN_BUKAN_ADMIN, 403];
+            }
         }
 
         $request->session()->regenerate();
@@ -170,6 +189,13 @@ class Autentikasi111 extends Controller
 
             return $pengguna;
         });
+
+        // Lonceng administrator: kabar ada pendaftar baru, menuju baris akunnya di Manajemen Pengguna.
+        \App\Notifications\KabarAdmin111::kirim(
+            'Pengguna baru',
+            "{$pengguna->name} ({$pengguna->email}) baru saja mendaftar.",
+            route('pengguna.index', ['cari' => $pengguna->email], absolute: false),
+        );
 
         return $pengguna;
     }

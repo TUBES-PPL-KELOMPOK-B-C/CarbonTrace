@@ -171,3 +171,23 @@
   }
   .lp-auth__merek { top: var(--ct-s3); left: var(--ct-s3); }
 }
+
+
+/* Pilihan "Masuk sebagai" Pengguna / Administrator */
+.lp-sebagai { border: 0; margin: 0; padding: 0; min-width: 0; }
+.lp-sebagai legend { padding: 0; margin-bottom: 8px; }
+.lp-sebagai__pilihan { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border: 1px solid var(--ct-border); border-radius: var(--ct-r-ctrl); background: var(--ct-surface); }
+.lp-sebagai__opsi { position: relative; cursor: pointer; }
+.lp-sebagai__opsi input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.lp-sebagai__opsi span {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 40px; border-radius: calc(var(--ct-r-ctrl) - 2px);
+  font-size: 14px; font-weight: 600; color: var(--ct-text-muted);
+  transition: background .15s ease, color .15s ease;
+}
+.lp-sebagai__opsi svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lp-sebagai__opsi:hover span { color: var(--ct-text); }
+.lp-sebagai__opsi input:checked + span { background: color-mix(in srgb, var(--ct-primary) 18%, transparent); color: var(--ct-primary); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ct-primary) 50%, transparent); }
+.lp-sebagai__opsi input:focus-visible + span { outline: 2px solid var(--ct-primary); outline-offset: 2px; }
+/* Pendaftaran hanya untuk pengguna: tautan "Daftar gratis" disembunyikan saat memilih Administrator */
+.lp-auth__kartu:has(input[name="sebagai"][value="administrator"]:checked) [data-khusus-pengguna] { display: none; }
