@@ -27,6 +27,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Memutus sesi pengguna di perangkat lain seketika apabila akun dinonaktifkan (PBI-01).
         $middleware->web(append: [
             \App\Http\Middleware\PastikanAkunAktif314::class,
+            // Lonceng notifikasi: setiap simpan/ubah/hapus yang berhasil dicatat (Alvin-111)
+            \App\Http\Middleware\CatatNotifikasiPengisian111::class,
         ]);
 
         // Rute JSON yang bisa dicoba lewat Postman atau curl tanpa token CSRF. Masuk, daftar,
