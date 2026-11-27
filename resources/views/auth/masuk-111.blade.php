@@ -46,7 +46,7 @@
 
                 <div class="ct-isian-grup">
                     <label class="ct-label" for="email">Email</label>
-                    <input class="ct-isian" type="email" id="email" name="email" value="{{ old('email') }}"
+                    <input class="ct-isian" type="email" id="email" name="email" value="{{ old('email', $emailBaru ?? '') }}"
                            autocomplete="email" placeholder="nama@contoh.com" required
                            @error('email') aria-invalid="true" aria-describedby="galat-email" @enderror>
                     @error('email')<p class="ct-galat" id="galat-email">{{ $message }}</p>@enderror

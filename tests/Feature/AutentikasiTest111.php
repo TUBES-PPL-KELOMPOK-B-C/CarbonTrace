@@ -28,12 +28,15 @@ class AutentikasiTest111 extends TestCase
         $this->get(route('auth.daftar'))->assertOk()->assertSee('Buat Akun CarbonTrace');
     }
 
-    public function test_pendaftaran_membuat_akun_lalu_langsung_masuk(): void
+    public function test_pendaftaran_membuat_akun_lalu_kembali_ke_beranda_tanpa_masuk(): void
     {
         $this->post(route('auth.simpan'), $this->dataDaftar())
-            ->assertRedirect(route('dashboard.index'));
+            ->assertRedirect(route('beranda'))
+            ->assertSessionHas('sukses', 'Akun berhasil dibuat. Silakan masuk untuk mulai mencatat.');
 
-        $this->assertAuthenticated();
+        $this->assertGuest();
+        $this->get(route('beranda'))->assertSee('Akun berhasil dibuat. Silakan masuk untuk mulai mencatat.');
+        $this->get(route('auth.masuk'))->assertSee('value="budi@contoh.com"', false);
         $this->assertDatabaseHas('users', [
             'email' => 'budi@contoh.com',
             'campus' => 'Telkom University',
@@ -45,7 +48,7 @@ class AutentikasiTest111 extends TestCase
     {
         \Spatie\Permission\Models\Role::create(['name' => 'user', 'guard_name' => 'web']);
 
-        $this->post(route('auth.simpan'), $this->dataDaftar())->assertRedirect(route('dashboard.index'));
+        $this->post(route('auth.simpan'), $this->dataDaftar())->assertRedirect(route('beranda'));
 
         $this->assertTrue(User::where('email', 'budi@contoh.com')->first()->hasRole('user'));
     }
@@ -214,7 +217,7 @@ class AutentikasiTest111 extends TestCase
             ->assertJsonPath('pengguna.campus', 'Telkom University')
             ->assertJsonMissingPath('pengguna.password');
 
-        $this->assertAuthenticated();
+        $this->assertGuest();
     }
 
     public function test_api_daftar_tidak_valid_memberi_galat_per_kolom(): void

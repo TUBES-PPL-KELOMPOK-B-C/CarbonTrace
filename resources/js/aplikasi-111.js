@@ -15,3 +15,16 @@ document.querySelectorAll('.ct-latar-belakang').forEach((latar) => {
     selaraskan(latar);
     new MutationObserver(() => selaraskan(latar)).observe(latar, { attributes: true, attributeFilter: ['class'] });
 });
+
+// Drill-down menu samping: pilihan buka/tutup tiap kelompok diingat di browser ini (kunci "ct-menu-<kelompok>").
+// Pilihan tersimpan diterapkan oleh skrip kecil di layouts/aplikasi-111.blade.php sebelum halaman tampil;
+// kelompok yang memuat halaman aktif selalu terbuka supaya posisi pengguna tetap terlihat.
+const simpan = (kunci, nilai) => { try { localStorage.setItem(kunci, nilai); } catch { /* penyimpanan diblokir: abaikan */ } };
+
+document.querySelectorAll('details.ap-kelompok[data-kelompok]').forEach((kelompok) => {
+    const kunci = `ct-menu-${kelompok.dataset.kelompok}`;
+
+    // Disimpan saat summary diklik (juga Enter/Spasi), bukan lewat event "toggle",
+    // karena "toggle" ikut terpicu oleh atribut open bawaan saat halaman dimuat.
+    kelompok.querySelector(':scope > summary')?.addEventListener('click', () => simpan(kunci, kelompok.open ? '0' : '1'));
+});

@@ -109,8 +109,12 @@
                 @foreach ($menu as [$label, $rute, $kunciIkon, $pola, $sub])
                     <li>
                         @if ($sub)
-                            @php $kelompokAktif = collect($sub)->contains(fn ($s) => $aktif($s[3])); @endphp
-                            <details class="ap-kelompok" @if ($kelompokAktif) open @endif>
+                            @php
+                                $kelompokAktif = collect($sub)->contains(fn ($s) => $aktif($s[3]));
+                                // Aktivitas dan Target terbuka sejak awal; pilihan buka/tutup pengguna diingat oleh aplikasi-111.js
+                                $bukaBawaan = $kelompokAktif || in_array($kunciIkon, ['aktivitas', 'target'], true);
+                            @endphp
+                            <details class="ap-kelompok" data-kelompok="{{ $kunciIkon }}" @if ($kelompokAktif) data-kelompok-aktif @endif @if ($bukaBawaan) open @endif>
                                 <summary class="ap-menu__tautan {{ $kelompokAktif ? 'ap-menu__tautan--induk-aktif' : '' }}" title="{{ $label }}">
                                     <svg class="ap-ikon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">{!! $ikon[$kunciIkon] !!}</svg>
                                     <span class="ap-menu__label">{{ $label }}</span>
@@ -128,6 +132,12 @@
                     </li>
                 @endforeach
             </ul>
+            {{-- Dijalankan langsung (bukan dari Vite) supaya kelompok yang pernah ditutup tidak sempat berkedip terbuka --}}
+            <script>
+                document.querySelectorAll('details.ap-kelompok[data-kelompok]:not([data-kelompok-aktif])').forEach(function (k) {
+                    try { var s = localStorage.getItem('ct-menu-' + k.dataset.kelompok); if (s !== null) k.open = s === '1'; } catch (e) {}
+                });
+            </script>
 
             @if ($adminMenu)
                 <p class="ap-menu__kelompok-judul">Administrator</p>
