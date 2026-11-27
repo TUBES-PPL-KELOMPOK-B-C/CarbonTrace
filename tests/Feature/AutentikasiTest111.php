@@ -280,4 +280,71 @@ class AutentikasiTest111 extends TestCase
             ->postJson(route('auth.api.masuk'), ['email' => 'lain@contoh.com', 'password' => 'rahasia123'])
             ->assertStatus(409);
     }
+
+    // ---- Pilihan "Masuk sebagai" Pengguna / Administrator ----
+
+    private function akunAdmin(): User
+    {
+        $admin = User::factory()->create(['password' => 'rahasia123']);
+        $admin->assignRole(\Spatie\Permission\Models\Role::findOrCreate('administrator', 'web'));
+
+        return $admin;
+    }
+
+    public function test_halaman_masuk_menawarkan_pilihan_pengguna_atau_administrator(): void
+    {
+        $this->get(route('auth.masuk'))->assertOk()
+            ->assertSee('Masuk sebagai')
+            ->assertSee('value="pengguna" checked', false)
+            ->assertSee('value="administrator"', false);
+    }
+
+    public function test_masuk_sesuai_pilihan_peran_berhasil(): void
+    {
+        $pengguna = User::factory()->create(['password' => 'rahasia123']);
+        $this->post(route('auth.proses'), ['email' => $pengguna->email, 'password' => 'rahasia123', 'sebagai' => 'pengguna'])
+            ->assertRedirect(route('dashboard.index'));
+        $this->assertAuthenticatedAs($pengguna);
+        $this->post(route('auth.keluar'));
+
+        $admin = $this->akunAdmin();
+        $this->post(route('auth.proses'), ['email' => $admin->email, 'password' => 'rahasia123', 'sebagai' => 'administrator'])
+            ->assertRedirect(route('dashboard.index'));
+        $this->assertAuthenticatedAs($admin);
+    }
+
+    public function test_pilihan_peran_yang_tidak_cocok_ditolak_tanpa_mengunci_akun(): void
+    {
+        $pengguna = User::factory()->create(['password' => 'rahasia123']);
+        $admin = $this->akunAdmin();
+
+        $this->from(route('auth.masuk'))
+            ->post(route('auth.proses'), ['email' => $pengguna->email, 'password' => 'rahasia123', 'sebagai' => 'administrator'])
+            ->assertRedirect(route('auth.masuk'))
+            ->assertSessionHas('galat_masuk', 'Akun ini bukan akun administrator. Pilih "Pengguna" untuk masuk.');
+        $this->assertGuest();
+
+        $this->post(route('auth.proses'), ['email' => $admin->email, 'password' => 'rahasia123', 'sebagai' => 'pengguna'])
+            ->assertSessionHas('galat_masuk', 'Ini akun administrator. Pilih "Administrator" untuk masuk.');
+        $this->assertGuest();
+
+        // Salah pilih bukan salah sandi, jadi tidak dihitung ke batas 5 kali gagal.
+        foreach (range(1, 5) as $i) {
+            $this->post(route('auth.proses'), ['email' => $pengguna->email, 'password' => 'rahasia123', 'sebagai' => 'administrator']);
+        }
+        $this->post(route('auth.proses'), ['email' => $pengguna->email, 'password' => 'rahasia123', 'sebagai' => 'pengguna']);
+        $this->assertAuthenticatedAs($pengguna);
+    }
+
+    public function test_pendaftar_baru_dikabarkan_ke_lonceng_administrator(): void
+    {
+        $admin = $this->akunAdmin();
+
+        $this->post(route('auth.simpan'), $this->dataDaftar());
+
+        $kabar = $admin->notifications()->sole();
+        $this->assertSame('admin', $kabar->data['jenis']);
+        $this->assertSame('Budi Santoso (budi@contoh.com) baru saja mendaftar.', $kabar->data['pesan']);
+        $this->assertSame('/admin/pengguna?cari=budi%40contoh.com', $kabar->data['tautan']);
+    }
 }

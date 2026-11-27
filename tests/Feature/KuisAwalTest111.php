@@ -133,6 +133,24 @@ class KuisAwalTest111 extends TestCase
             ->assertSee('6,00');
     }
 
+    public function test_kuis_selesai_dikabarkan_ke_lonceng_administrator(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole(Role::findOrCreate('administrator', 'web'));
+
+        $this->actingAs($this->pengguna);
+        $this->jawab(0, 1);
+        $this->assertSame(0, $admin->notifications()->count()); // belum selesai: belum ada kabar
+        $this->jawab(1, 1);
+
+        $kabar = $admin->notifications()->sole();
+        $this->assertSame('admin', $kabar->data['jenis']);
+        $this->assertSame("{$this->pengguna->name} menyelesaikan kuis awal. Garis dasarnya 12,00 kg CO2e per hari.", $kabar->data['pesan']);
+        $this->assertSame('/admin/kuis-awal', $kabar->data['tautan']);
+
+        $this->actingAs($admin)->get(route('dashboard.index'))->assertSee('menyelesaikan kuis awal')->assertSee('ap-notif__ikon--admin');
+    }
+
     public function test_tanpa_soal_aktif_kuis_tidak_dipaksakan(): void
     {
         QuizQuestion221::query()->update(['is_active' => false]);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\QuizQuestion221;
+use App\Notifications\KabarAdmin111;
 use App\Services\KuisAwal111 as LayananKuis;
 use App\Services\PerhitunganEmisi111;
 use Illuminate\Http\RedirectResponse;
@@ -69,9 +70,16 @@ class KuisAwal111 extends Controller
         }
 
         $garis = $this->kuis->garisDasar($request->user());
+        $angka = PerhitunganEmisi111::angka($garis['nilai'], 2, true);
+
+        KabarAdmin111::kirim(
+            'Kuis Awal',
+            "{$request->user()->name} menyelesaikan kuis awal. Garis dasarnya {$angka} kg CO2e per hari.",
+            route('kuis-awal.ringkasan', absolute: false),
+        );
 
         return redirect()->route('kuis-awal.hasil')
-            ->with('sukses', 'Kuis awal selesai. Garis dasar emisimu '.PerhitunganEmisi111::angka($garis['nilai'], 2, true).' kg CO2e per hari.');
+            ->with('sukses', "Kuis awal selesai. Garis dasar emisimu {$angka} kg CO2e per hari.");
     }
 
     public function lewati(Request $request): RedirectResponse
