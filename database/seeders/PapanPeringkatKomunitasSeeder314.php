@@ -142,10 +142,29 @@ class PapanPeringkatKomunitasSeeder314 extends Seeder
             if (Schema::hasTable('challenge_user') && Schema::hasTable('challenges')) {
                 $challenge = DB::table('challenges')->first();
                 if (!$challenge) {
+                    // Kolom disesuaikan dengan skema `challenges` milik PBI-14 (Man-015):
+                    // `points` menjadi `reward_points`, dan periode serta target penurunan
+                    // kini wajib. Kategori diambil dari yang sudah ada; seeder ini berjalan
+                    // sebelum MasterDataEmisiStubSeeder, jadi kalau belum ada dibuat dulu.
+                    $categoryId = DB::table('categories')->value('id');
+                    if (!$categoryId) {
+                        $categoryId = DB::table('categories')->insertGetId([
+                            'name' => 'Listrik',
+                            'code' => 'listrik',
+                            'is_active' => true,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+
                     $challengeId = DB::table('challenges')->insertGetId([
+                        'category_id' => $categoryId,
                         'title' => 'Tantangan Kurangi Emisi Listrik 20%',
                         'description' => 'Matikan perangkat listrik tidak terpakai selama 30 hari berturut-turut.',
-                        'points' => 500,
+                        'start_date' => now()->subDays(20)->toDateString(),
+                        'end_date' => now()->addDays(10)->toDateString(),
+                        'reduction_target' => 20.0000,
+                        'reward_points' => 500,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);

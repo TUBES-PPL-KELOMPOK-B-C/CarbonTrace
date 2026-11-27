@@ -10,6 +10,7 @@ require __DIR__.'/modul-target-pengingat-dan-laporan-022.php';
 require __DIR__.'/modul-edukasi-dan-komunitas-365.php';
 require __DIR__.'/modul-pencatatan-aktivitas-221.php';
 require __DIR__.'/modul-akun-dan-administrasi-pengguna-314.php';
+require __DIR__.'/modul-gamifikasi-015.php';
 require __DIR__.'/modul-data-master-emisi-154.php';
 
 Route::view('/', 'publik.beranda')->name('beranda');

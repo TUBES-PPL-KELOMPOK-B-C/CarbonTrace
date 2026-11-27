@@ -35,5 +35,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(\App\Models\User314::class, \App\Policies\ManajemenProfilPenggunaPolicy314::class);
         Gate::policy(\App\Models\UserSetting314::class, \App\Policies\PengaturanKonsumsiRumahTanggaPolicy314::class);
         Gate::define('lihat-papan-peringkat', [\App\Policies\PapanPeringkatKomunitasPolicy314::class, 'viewAny']);
+
+        // Pemetaan Policy Modul Gamifikasi (Man-015)
+        Gate::policy(\App\Models\Badge015::class, \App\Policies\ManajemenLencanaPolicy015::class);
     }
 }
