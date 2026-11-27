@@ -89,7 +89,7 @@ class DashboardTest111 extends TestCase
     public function test_menu_administrator_hanya_untuk_peran_administrator_atau_admin(): void
     {
         $biasa = User::factory()->create();
-        $this->actingAs($biasa)->get(route('dashboard.index'))->assertDontSee('Manajemen Pengguna');
+        $this->actingAs($biasa)->get(route('dashboard.index'))->assertDontSee('Manajemen Pengguna')->assertDontSee('Kategori Emisi');
 
         foreach (['administrator', 'admin'] as $peran) {
             \Spatie\Permission\Models\Role::findOrCreate($peran, 'web');
@@ -97,7 +97,7 @@ class DashboardTest111 extends TestCase
             $admin->assignRole($peran);
 
             $this->actingAs($admin)->get(route('dashboard.index'))
-                ->assertSeeInOrder(['Administrator', 'Manajemen Pengguna', 'Bank Soal Kuis']);
+                ->assertSeeInOrder(['Administrator', 'Manajemen Pengguna', 'Bank Soal Kuis', 'Kategori Emisi', 'Faktor Emisi', 'Konversi Satuan', 'Kelola Lencana']);
         }
     }
 

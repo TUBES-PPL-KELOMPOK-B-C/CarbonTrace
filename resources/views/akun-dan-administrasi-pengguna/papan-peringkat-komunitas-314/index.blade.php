@@ -3,7 +3,8 @@
 @section('judul', 'Papan Peringkat')
 
 @push('aset')
-    <link rel="stylesheet" href="{{ asset('build/assets/papan-peringkat-314.css') }}">
+    {{-- Lewat @vite: berkas hasil build diberi hash (papan-peringkat-314-xxxx.css), jadi asset() tanpa hash tidak ditemukan --}}
+    @vite('resources/css/papan-peringkat-314.css')
 @endpush
 
 @section('isi')

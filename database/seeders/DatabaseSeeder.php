@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             PengaturanKonsumsiRumahTanggaSeeder314::class,
             PapanPeringkatKomunitasSeeder314::class,
             MasterDataEmisiStubSeeder::class,
+            AcuanKonversiSatuanSeeder154::class, // data dummy PBI-09
             PencatatanAktivitasEmisiHarianSeeder221::class,
             TemplateAktivitasRutinSeeder221::class,
             ManajemenBankPertanyaanKuisSeeder221::class,
