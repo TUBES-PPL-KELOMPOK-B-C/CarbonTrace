@@ -224,6 +224,21 @@ class DashboardTest111 extends TestCase
         DB::enableQueryLog();
         $this->actingAs($alvin)->get(route('dashboard.index'))->assertOk();
 
-        $this->assertLessThan(10, count(DB::getQueryLog()));
+        // Kueri lonceng notifikasi di bilah atas tidak dihitung: jumlahnya tetap satu, berapa pun datanya.
+        $kueriHalaman = array_filter(DB::getQueryLog(), fn ($k) => ! str_contains($k['query'], '"notifications"'));
+        $this->assertLessThan(10, count($kueriHalaman));
+    }
+
+    public function test_lonceng_hanya_menambah_satu_kueri_walau_notifikasinya_banyak(): void
+    {
+        $alvin = User::factory()->create();
+        foreach (range(1, 25) as $i) {
+            $alvin->notify(new \App\Notifications\PengisianTersimpan111('Uji', 'Catatan '.$i));
+        }
+
+        DB::enableQueryLog();
+        $this->actingAs($alvin)->get(route('dashboard.index'))->assertOk()->assertSee('9+');
+
+        $this->assertCount(1, array_filter(DB::getQueryLog(), fn ($k) => str_contains($k['query'], '"notifications"')));
     }
 }

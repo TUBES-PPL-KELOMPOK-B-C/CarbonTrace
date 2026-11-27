@@ -172,10 +172,55 @@
         <header class="ap-atas">
             <h1 class="ap-atas__judul">{{ $judul }}</h1>
             <div class="ap-atas__aksi">
-                {{-- TODO: isi daftar pemberitahuan setelah pengumuman (PBI-18) siap --}}
-                <button type="button" class="ap-lonceng" aria-label="Pemberitahuan (belum ada)">
-                    <svg class="ap-ikon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
-                </button>
+                {{-- Lonceng notifikasi: hasil simpan data dan pengingat (Alvin-111). Satu kueri, sepuluh terbaru. --}}
+                @php
+                    try {
+                        $daftarNotifikasi = $pengguna->notifications()->latest()->limit(10)->get();
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        $daftarNotifikasi = collect(); // tabel notifications belum dimigrasi
+                    }
+                    $belumDibaca = $daftarNotifikasi->whereNull('read_at')->count();
+                @endphp
+                <div class="ap-notif" data-notif>
+                    <button type="button" class="ap-lonceng" aria-expanded="false" aria-controls="ap-notif-panel" data-notif-tombol
+                            aria-label="Notifikasi{{ $belumDibaca ? ', '.$belumDibaca.' belum dibaca' : '' }}">
+                        <svg class="ap-ikon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+                        @if ($belumDibaca)
+                            <span class="ap-lonceng__jumlah" aria-hidden="true">{{ $belumDibaca > 9 ? '9+' : $belumDibaca }}</span>
+                        @endif
+                    </button>
+                    <div class="ap-notif__panel" id="ap-notif-panel" data-notif-panel hidden>
+                        <div class="ap-notif__kepala">
+                            <p class="ap-notif__judul">Notifikasi</p>
+                            @if ($belumDibaca)
+                                <form method="POST" action="{{ route('notifikasi.baca-semua') }}">
+                                    @csrf
+                                    <button type="submit" class="ap-notif__baca-semua">Tandai semua dibaca</button>
+                                </form>
+                            @endif
+                        </div>
+                        @forelse ($daftarNotifikasi as $n)
+                            @php $pengingatKah = ($n->data['jenis'] ?? '') === 'pengingat'; @endphp
+                            <a href="{{ route('notifikasi.buka', $n->id) }}" class="ap-notif__butir {{ $n->read_at ? '' : 'ap-notif__butir--baru' }}">
+                                <span class="ap-notif__ikon ap-notif__ikon--{{ $pengingatKah ? 'pengingat' : 'pengisian' }}" aria-hidden="true">
+                                    @if ($pengingatKah)
+                                        <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="13" r="7"/><path d="M12 9v4l2 2M5 4 2 7M19 4l3 3"/></svg>
+                                    @else
+                                        <svg viewBox="0 0 24 24" focusable="false"><path d="m5 12 5 5L20 7"/></svg>
+                                    @endif
+                                </span>
+                                <span class="ap-notif__teks">
+                                    <strong>{{ $n->data['judul'] ?? 'CarbonTrace' }}</strong>
+                                    <span>{{ $n->data['pesan'] ?? '' }}</span>
+                                    <time datetime="{{ $n->created_at->toIso8601String() }}">{{ $n->created_at->locale('id')->diffForHumans() }}</time>
+                                </span>
+                                @unless ($n->read_at)<span class="ap-notif__titik" title="Belum dibaca"></span>@endunless
+                            </a>
+                        @empty
+                            <p class="ap-notif__kosong">Belum ada notifikasi. Hasil simpan data dan pengingat harian akan muncul di sini.</p>
+                        @endforelse
+                    </div>
+                </div>
                 {{-- Avatar dan nama membuka halaman Profil Saya (modul Rosi) bila rutenya tersedia --}}
                 @php $adaProfil = Route::has('profil.index'); @endphp
                 <{{ $adaProfil ? 'a' : 'span' }} class="ap-pengguna"

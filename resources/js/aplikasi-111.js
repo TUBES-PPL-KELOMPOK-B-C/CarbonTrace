@@ -28,3 +28,24 @@ document.querySelectorAll('details.ap-kelompok[data-kelompok]').forEach((kelompo
     // karena "toggle" ikut terpicu oleh atribut open bawaan saat halaman dimuat.
     kelompok.querySelector(':scope > summary')?.addEventListener('click', () => simpan(kunci, kelompok.open ? '0' : '1'));
 });
+
+// Lonceng notifikasi: panel dibuka-tutup lewat tombol, tertutup saat klik di luar atau tombol Esc.
+document.querySelectorAll('[data-notif]').forEach((wadah) => {
+    const tombol = wadah.querySelector('[data-notif-tombol]');
+    const panel = wadah.querySelector('[data-notif-panel]');
+    if (!tombol || !panel) return;
+
+    const atur = (buka) => {
+        panel.hidden = !buka;
+        tombol.setAttribute('aria-expanded', String(buka));
+    };
+
+    tombol.addEventListener('click', () => atur(panel.hidden));
+    document.addEventListener('click', (e) => { if (!panel.hidden && !wadah.contains(e.target)) atur(false); });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !panel.hidden) {
+            atur(false);
+            tombol.focus();
+        }
+    });
+});

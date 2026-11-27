@@ -11,3 +11,6 @@ Artisan::command('inspire', function () {
 // PBI-11 Pengingat Pencatatan Harian (Alvin-022): periksa pengingat yang jatuh tempo setiap menit.
 // Di laptop jalankan "php artisan schedule:work"; di server cukup satu cron untuk schedule:run.
 Schedule::command('pengingat:kirim')->everyMinute()->withoutOverlapping();
+
+// Lonceng notifikasi (Alvin-111): pengingat otomatis bagi pengguna yang 24 jam belum mencatat.
+Schedule::command('notifikasi:pengingat-otomatis')->hourly()->withoutOverlapping();

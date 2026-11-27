@@ -7,7 +7,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Route;
 
-// PBI-11: pesan pengingat harian, dikirim lewat email.
+// PBI-11: pesan pengingat harian, dikirim lewat email dan juga muncul di lonceng notifikasi.
 class PengingatPencatatan022 extends Notification
 {
     use Queueable;
@@ -16,7 +16,7 @@ class PengingatPencatatan022 extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -31,5 +31,15 @@ class PengingatPencatatan022 extends Notification
             ->action('Catat Aktivitas', $tujuan)
             ->line('Pengingat ini dilewati pada hari kamu sudah mencatat. Jadwalnya bisa diubah di halaman Pengingat.')
             ->salutation('Salam, Tim CarbonTrace');
+    }
+
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'jenis' => 'pengingat',
+            'judul' => 'Pengingat pukul '.$this->jam,
+            'pesan' => 'Kamu belum mencatat aktivitas hari ini.',
+            'tautan' => Route::has('aktivitas.create') ? route('aktivitas.create', absolute: false) : route('dashboard.index', absolute: false),
+        ];
     }
 }
