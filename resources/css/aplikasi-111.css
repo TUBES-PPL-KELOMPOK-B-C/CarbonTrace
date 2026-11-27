@@ -127,7 +127,10 @@
 .ap-lonceng:hover, .ap-keluar-atas button:hover { color: var(--ct-text); }
 .ap-keluar-atas { display: none; }
 
-.ap-pengguna { display: flex; align-items: center; gap: var(--ct-s2); font-size: 14px; font-weight: 600; }
+.ap-pengguna { display: flex; align-items: center; gap: var(--ct-s2); font-size: 14px; font-weight: 600; color: inherit; text-decoration: none; }
+a.ap-pengguna { padding: 2px var(--ct-s2) 2px 2px; border-radius: 999px; transition: background .15s ease; }
+a.ap-pengguna:hover, a.ap-pengguna[aria-current="page"] { background: var(--ct-surface); }
+a.ap-pengguna:focus-visible { outline: 2px solid var(--ct-primary); outline-offset: 2px; }
 .ap-avatar {
   display: grid; place-items: center;
   width: 36px; height: 36px;

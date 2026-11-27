@@ -166,10 +166,13 @@
                 <button type="button" class="ap-lonceng" aria-label="Pemberitahuan (belum ada)">
                     <svg class="ap-ikon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
                 </button>
-                <span class="ap-pengguna">
+                {{-- Avatar dan nama membuka halaman Profil Saya (modul Rosi) bila rutenya tersedia --}}
+                @php $adaProfil = Route::has('profil.index'); @endphp
+                <{{ $adaProfil ? 'a' : 'span' }} class="ap-pengguna"
+                    @if ($adaProfil) href="{{ route('profil.index') }}" title="Buka profil" aria-label="Buka profil {{ $pengguna->name }}" @if (request()->routeIs('profil.*')) aria-current="page" @endif @endif>
                     <span class="ap-avatar" aria-hidden="true">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($pengguna->name, 0, 1)) }}</span>
                     <span class="ap-pengguna__nama">{{ $namaDepan }}</span>
-                </span>
+                </{{ $adaProfil ? 'a' : 'span' }}>
                 {{-- Di layar sempit sidebar tersembunyi, jadi tombol Keluar pindah ke sini --}}
                 <form method="POST" action="{{ route('auth.keluar') }}" class="ap-keluar-atas">
                     @csrf
