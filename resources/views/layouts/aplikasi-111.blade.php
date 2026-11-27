@@ -244,7 +244,12 @@
                 @php $adaProfil = Route::has('profil.index'); @endphp
                 <{{ $adaProfil ? 'a' : 'span' }} class="ap-pengguna"
                     @if ($adaProfil) href="{{ route('profil.index') }}" title="Buka profil" aria-label="Buka profil {{ $pengguna->name }}" @if (request()->routeIs('profil.*')) aria-current="page" @endif @endif>
-                    <span class="ap-avatar" aria-hidden="true">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($pengguna->name, 0, 1)) }}</span>
+                    {{-- Foto profil (PBI-01) bila ada; tanpa foto, huruf depan nama --}}
+                    @if ($pengguna->photo)
+                        <img class="ap-avatar ap-avatar--foto" src="{{ asset('storage/'.$pengguna->photo) }}" alt="" aria-hidden="true">
+                    @else
+                        <span class="ap-avatar" aria-hidden="true">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($pengguna->name, 0, 1)) }}</span>
+                    @endif
                     <span class="ap-pengguna__nama">{{ $namaDepan }}</span>
                 </{{ $adaProfil ? 'a' : 'span' }}>
                 {{-- Di layar sempit sidebar tersembunyi, jadi tombol Keluar pindah ke sini --}}
