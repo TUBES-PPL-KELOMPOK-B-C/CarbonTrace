@@ -98,7 +98,8 @@
     @stack('aset')
     @stack('styles')
 </head>
-<body class="ap">
+{{-- data-akun-*: dipakai aplikasi-111.js untuk memberi tahu bila akun di tab lain berganti --}}
+<body class="ap" data-akun-id="{{ $pengguna->id }}" data-akun-nama="{{ $namaDepan }}">
     <svg class="ap-simbol" aria-hidden="true" focusable="false">
         <symbol id="ct-lambang" viewBox="0 0 64 64">
             <path d="M32 4 56 18v28L32 60 8 46V18Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
@@ -161,7 +162,7 @@
             @endif
         </nav>
 
-        <form method="POST" action="{{ route('auth.keluar') }}" class="ap-keluar">
+        <form method="POST" action="{{ route('auth.keluar') }}" class="ap-keluar" data-form-keluar>
             @csrf
             <button type="submit" class="ap-menu__tautan" title="Keluar">
                 <svg class="ap-ikon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>
@@ -247,7 +248,7 @@
                     <span class="ap-pengguna__nama">{{ $namaDepan }}</span>
                 </{{ $adaProfil ? 'a' : 'span' }}>
                 {{-- Di layar sempit sidebar tersembunyi, jadi tombol Keluar pindah ke sini --}}
-                <form method="POST" action="{{ route('auth.keluar') }}" class="ap-keluar-atas">
+                <form method="POST" action="{{ route('auth.keluar') }}" class="ap-keluar-atas" data-form-keluar>
                     @csrf
                     <button type="submit" aria-label="Keluar">
                         <svg class="ap-ikon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>

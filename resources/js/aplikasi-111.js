@@ -58,3 +58,48 @@ if (sisi) {
         try { sessionStorage.setItem('ct-sisi-gulir', String(sisi.scrollTop)); } catch { /* diblokir: abaikan */ }
     });
 }
+
+// Akun antartab. Semua tab di satu browser memakai satu cookie login, jadi masuk atau keluar di
+// satu tab ikut mengganti akun di tab lain. Tab yang tertinggal tidak diam-diam berganti: ia
+// menutup halamannya dengan pemberitahuan dan tombol muat ulang. Kabarnya lewat localStorage
+// (kunci "ct-akun"), yang memicu event "storage" di tab lain pada browser yang sama.
+const akunTab = { id: document.body.dataset.akunId, nama: document.body.dataset.akunNama };
+const kabarkanAkun = (isi) => { try { localStorage.setItem('ct-akun', JSON.stringify({ ...isi, waktu: Date.now() })); } catch { /* diblokir: abaikan */ } };
+
+const tutupTab = (pesan) => {
+    if (document.querySelector('.ap-akun-berganti')) return;
+    const lapisan = document.createElement('div');
+    lapisan.className = 'ap-akun-berganti';
+    lapisan.setAttribute('role', 'alertdialog');
+    lapisan.setAttribute('aria-modal', 'true');
+    lapisan.setAttribute('aria-labelledby', 'ap-akun-berganti-judul');
+    lapisan.innerHTML = `
+        <div class="ap-akun-berganti__kotak">
+            <h2 id="ap-akun-berganti-judul">Akun di tab ini sudah berganti</h2>
+            <p></p>
+            <p class="ap-akun-berganti__saran">Untuk memakai akun admin dan pengguna bersamaan, buka salah satunya di jendela InPrivate/Incognito.</p>
+            <button type="button" class="ct-tombol ct-tombol--utama">Muat ulang</button>
+        </div>`;
+    lapisan.querySelector('p').textContent = pesan;
+    lapisan.querySelector('button').addEventListener('click', () => window.location.reload());
+    document.body.append(lapisan);
+    lapisan.querySelector('button').focus();
+};
+
+if (akunTab.id) {
+    kabarkanAkun({ id: akunTab.id, nama: akunTab.nama });
+
+    window.addEventListener('storage', (e) => {
+        if (e.key !== 'ct-akun' || !e.newValue) return;
+        let baru;
+        try { baru = JSON.parse(e.newValue); } catch { return; }
+        if (baru.id === akunTab.id) return;
+        tutupTab(baru.id
+            ? `Di tab lain kamu masuk sebagai ${baru.nama}. Halaman ini masih menampilkan akun ${akunTab.nama} dan tidak bisa dipakai lagi.`
+            : `Akun ${akunTab.nama} sudah keluar di tab lain.`);
+    });
+
+    document.querySelectorAll('[data-form-keluar]').forEach((form) => {
+        form.addEventListener('submit', () => kabarkanAkun({ id: null }));
+    });
+}

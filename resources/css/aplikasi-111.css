@@ -300,3 +300,18 @@ a.ap-pengguna:focus-visible { outline: 2px solid var(--ct-primary); outline-offs
 }
 .ds-kuis__judul { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
 .ds-kuis__teks { margin: 0; font-size: 13px; color: var(--ct-text-muted); }
+
+/* Pemberitahuan akun berganti di tab lain (aplikasi-111.js) */
+.ap-akun-berganti {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center; padding: var(--ct-s5);
+  background: color-mix(in srgb, var(--ct-bg) 80%, transparent); backdrop-filter: blur(6px);
+}
+.ap-akun-berganti__kotak {
+  width: min(440px, 100%); display: grid; gap: var(--ct-s3); justify-items: start;
+  padding: var(--ct-s6); border: 1px solid var(--ct-border); border-radius: var(--ct-r-card);
+  background: var(--ct-surface-raised); box-shadow: 0 20px 40px -12px rgba(0, 0, 0, .6);
+}
+.ap-akun-berganti__kotak h2 { margin: 0; font-size: 18px; }
+.ap-akun-berganti__kotak p { margin: 0; color: var(--ct-text-muted); line-height: 1.5; }
+.ap-akun-berganti__saran { font-size: 13px; }
