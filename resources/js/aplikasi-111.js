@@ -49,3 +49,12 @@ document.querySelectorAll('[data-notif]').forEach((wadah) => {
         }
     });
 });
+
+// Sidebar: posisi gulirnya disimpan sebelum pindah halaman, lalu dipulihkan oleh skrip kecil
+// di layouts/aplikasi-111.blade.php, supaya menu tidak melompat kembali ke atas.
+const sisi = document.querySelector('.ap-sisi');
+if (sisi) {
+    window.addEventListener('pagehide', () => {
+        try { sessionStorage.setItem('ct-sisi-gulir', String(sisi.scrollTop)); } catch { /* diblokir: abaikan */ }
+    });
+}

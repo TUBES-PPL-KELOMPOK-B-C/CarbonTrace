@@ -59,6 +59,13 @@ class ManajemenPenggunaDanPeran314 extends Controller
     {
         $validated = $request->validated();
 
+        // Aturan satu administrator: akun baru selalu pengguna biasa. Peran administrator hanya
+        // berpindah lewat serah terima di daftar pengguna.
+        if ($this->peranAdmin((int) $validated['role_id'])) {
+            return back()->withInput($request->except('password'))
+                ->withErrors(['role_id' => 'Akun administrator hanya boleh satu. Serahkan peran administrator lewat daftar pengguna.']);
+        }
+
         $user = User314::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -91,6 +98,12 @@ class ManajemenPenggunaDanPeran314 extends Controller
         ]);
 
         $roleIdBaru = (int) $request->input('role_id');
+
+        // Aturan satu administrator: menjadikan pengguna lain administrator berarti serah terima.
+        // Administrator lama otomatis menjadi pengguna biasa, sehingga administrator tetap satu.
+        if ($this->peranAdmin($roleIdBaru) && ! $this->peranAdmin((int) $pengguna->role_id) && (int) $pengguna->id !== (int) auth()->id()) {
+            return $this->serahkanAdministrator($pengguna, $roleIdBaru);
+        }
 
         // Aturan: Administrator tidak boleh menurunkan perannya sendiri
         if ((int) $pengguna->id === (int) auth()->id()) {
@@ -144,5 +157,40 @@ class ManajemenPenggunaDanPeran314 extends Controller
             : "Akun {$pengguna->name} berhasil dinonaktifkan.";
 
         return back()->with('sukses', $pesan);
+    }
+
+    // Peran bernama administrator (modul Akun) atau admin (Modul 2) dianggap peran administrator.
+    private function peranAdmin(int $roleId): bool
+    {
+        $nama = DB::table('roles')->where('id', $roleId)->value('name');
+
+        return in_array(strtolower((string) $nama), ['administrator', 'admin'], true);
+    }
+
+    private function serahkanAdministrator(User314 $penerima, int $roleIdAdmin): RedirectResponse
+    {
+        $rolePengguna = DB::table('roles')->whereIn('name', ['pengguna', 'user'])->orderByRaw("name = 'pengguna' desc")->first();
+        if (! $rolePengguna) {
+            return back()->withErrors(['peran' => 'Peran pengguna belum tersedia, serah terima dibatalkan.']);
+        }
+
+        $idPeranAdmin = DB::table('roles')->whereIn(DB::raw('lower(name)'), ['administrator', 'admin'])->pluck('id');
+        $namaPeranAdmin = DB::table('roles')->where('id', $roleIdAdmin)->value('name');
+
+        DB::transaction(function () use ($penerima, $roleIdAdmin, $namaPeranAdmin, $rolePengguna, $idPeranAdmin) {
+            // Semua administrator lain (termasuk yang sedang masuk) turun menjadi pengguna biasa.
+            User314::where('id', '!=', $penerima->id)->whereIn('role_id', $idPeranAdmin)->get()
+                ->each(function (User314 $lama) use ($rolePengguna) {
+                    $lama->update(['role_id' => $rolePengguna->id]);
+                    $lama->syncRoles([$rolePengguna->name]);
+                });
+
+            $penerima->update(['role_id' => $roleIdAdmin]);
+            $penerima->syncRoles([$namaPeranAdmin]);
+        });
+
+        // Yang menyerahkan sudah bukan administrator, jadi tidak bisa kembali ke panel admin.
+        return redirect()->route('dashboard.index')
+            ->with('sukses', "Peran administrator diserahkan kepada {$penerima->name}. Akunmu sekarang pengguna biasa.");
     }
 }
