@@ -112,13 +112,15 @@ class KuisAwal111 extends Controller
         $soal = $this->kuis->soalAktif();
         $idSoal = $soal->pluck('id')->all();
 
-        $pengguna = DB::table('users')->where('is_active', true)
-            ->whereNotIn('id', DB::table('model_has_roles')->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                ->whereIn('roles.name', ['administrator', 'admin'])->select('model_has_roles.model_id'));
+        // Akun administrator tidak dihitung, termasuk bila admin sempat mencoba kuisnya.
+        $idAdmin = DB::table('model_has_roles')->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->whereIn('roles.name', ['administrator', 'admin'])->select('model_has_roles.model_id');
+        $pengguna = DB::table('users')->where('is_active', true)->whereNotIn('id', $idAdmin);
 
         $perPengguna = $this->kuis->tersedia() && $idSoal
             ? DB::table('onboarding_results as o')->join('users as u', 'u.id', '=', 'o.user_id')
                 ->whereIn('o.quiz_question_id', $idSoal)
+                ->whereNotIn('o.user_id', $idAdmin)
                 ->groupBy('o.user_id', 'u.name', 'u.email')
                 ->selectRaw('o.user_id, u.name, u.email, SUM(o.score) as garis_dasar, COUNT(*) as terjawab, MAX(o.updated_at) as terakhir')
                 ->orderByDesc('terakhir')->get()

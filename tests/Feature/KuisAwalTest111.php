@@ -124,9 +124,12 @@ class KuisAwalTest111 extends TestCase
         $this->jawab(1, 0);
         $this->get(route('kuis-awal.ringkasan'))->assertForbidden();
 
-        $admin = User::factory()->create();
+        $admin = User::factory()->create(['name' => 'Admin Pencoba']);
         $admin->assignRole(Role::findOrCreate('administrator', 'web'));
+        // Admin yang mencoba kuis tidak ikut dihitung di ringkasan
+        $this->actingAs($admin)->post(route('kuis-awal.jawab'), ['soal_id' => $this->soal[0]->id, 'pilihan' => 0]);
         $this->actingAs($admin)->get(route('kuis-awal.ringkasan'))->assertOk()
+            ->assertDontSee($admin->email)
             ->assertSeeInOrder(['Pengguna aktif', '1', 'Sudah mengisi', '1'])
             ->assertSee('Bagaimana kamu bepergian?')
             ->assertSee($this->pengguna->email)
