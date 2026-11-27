@@ -4,7 +4,7 @@
     'bahaya' => false,
 ])
 
-<div id="{{ $id }}" class="ct-latar-belakang hidden" role="dialog" aria-modal="true" aria-labelledby="{{ $id }}-judul" onclick="if(event.target === this) { this.classList.add('hidden'); this.style.display = 'none'; }">
+<div id="{{ $id }}" class="ct-latar-belakang hidden" hidden role="dialog" aria-modal="true" aria-labelledby="{{ $id }}-judul" onclick="if(event.target === this) { this.classList.add('hidden'); this.setAttribute('hidden', ''); this.style.display = 'none'; }">
     <div class="ct-modal" style="position: relative;" onclick="event.stopPropagation();">
         <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: var(--ct-s3); margin-bottom: var(--ct-s4); border-bottom: 1px solid var(--ct-border);">
             <h3 id="{{ $id }}-judul" style="font-size: 18px; font-weight: 700; margin: 0; color: {{ $bahaya ? 'var(--ct-danger)' : 'var(--ct-text)' }};">

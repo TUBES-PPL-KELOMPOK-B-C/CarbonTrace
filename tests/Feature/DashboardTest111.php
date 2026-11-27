@@ -86,6 +86,29 @@ class DashboardTest111 extends TestCase
         ]);
     }
 
+    public function test_menu_administrator_hanya_untuk_peran_administrator_atau_admin(): void
+    {
+        $biasa = User::factory()->create();
+        $this->actingAs($biasa)->get(route('dashboard.index'))->assertDontSee('Manajemen Pengguna');
+
+        foreach (['administrator', 'admin'] as $peran) {
+            \Spatie\Permission\Models\Role::findOrCreate($peran, 'web');
+            $admin = User::factory()->create();
+            $admin->assignRole($peran);
+
+            $this->actingAs($admin)->get(route('dashboard.index'))
+                ->assertSeeInOrder(['Administrator', 'Manajemen Pengguna', 'Bank Soal Kuis']);
+        }
+    }
+
+    public function test_avatar_di_kanan_atas_membuka_profil(): void
+    {
+        $this->actingAs(User::factory()->create(['name' => 'Alvin Hibatullah']))
+            ->get(route('dashboard.index'))
+            ->assertSee('class="ap-pengguna"', false)
+            ->assertSee('href="'.route('profil.index').'" title="Buka profil"', false);
+    }
+
     public function test_tamu_dipantulkan_ke_halaman_masuk(): void
     {
         $this->get(route('dashboard.index'))->assertRedirect(route('auth.masuk'));

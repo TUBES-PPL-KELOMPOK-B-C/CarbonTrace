@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             PengingatPencatatanHarianSeeder022::class,
             // Modul Gamifikasi (Man-015)
             ManajemenLencanaSeeder015::class,
+            LaporanJejakKarbonSeeder022::class,
         ]);
     }
 }

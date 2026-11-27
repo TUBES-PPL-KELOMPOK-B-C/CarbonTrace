@@ -20,6 +20,15 @@ class RingkasanTarget022
 
     private ?bool $adaAktivitas = null;
 
+    // Pemanggil yang sudah tahu apakah tabel activities ada (mis. dashboard) bisa meneruskannya,
+    // supaya tidak ada kueri pemeriksaan skema tambahan.
+    public function denganTabelAktivitas(bool $ada): static
+    {
+        $this->adaAktivitas = $ada;
+
+        return $this;
+    }
+
     public static function hariIni(): Carbon
     {
         return Carbon::now(self::ZONA_WAKTU)->startOfDay();

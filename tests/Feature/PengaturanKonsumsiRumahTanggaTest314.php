@@ -185,4 +185,17 @@ class PengaturanKonsumsiRumahTanggaTest314 extends TestCase
         $this->assertFalse($userA->can('update', $settingB));
         $this->assertFalse($userA->can('delete', $settingB));
     }
+
+    public function test_hapus_saat_data_kosong_tidak_menampilkan_pesan_berhasil_dihapus(): void
+    {
+        $user = User314::factory()->create();
+
+        $response = $this->actingAs($user)->delete(route('rumah.destroy'));
+
+        $response->assertRedirect(route('rumah.index'));
+        $response->assertSessionMissing('sukses');
+        $response->assertSessionHasErrors([
+            'hapus_rumah' => 'Belum ada data rumah tangga yang tersimpan untuk dihapus.',
+        ]);
+    }
 }

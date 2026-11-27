@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User314;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
@@ -188,5 +189,138 @@ class ManajemenProfilPenggunaTest314 extends TestCase
         $this->assertFalse($userA->can('update', $userB));
         $this->assertFalse($userA->can('delete', $userB));
         $this->assertFalse($userA->can('view', $userB));
+    }
+
+    public function test_menolak_foto_bukan_gambar_atau_melebihi_2mb(): void
+    {
+        Storage::fake('public');
+        $user = User314::factory()->create();
+
+        // Format bukan gambar (PDF)
+        $pdf = UploadedFile::fake()->create('dokumen.pdf', 100, 'application/pdf');
+        $responsePdf = $this->actingAs($user)->put(route('profil.update'), [
+            'name' => $user->name,
+            'email' => $user->email,
+            'photo' => $pdf,
+        ]);
+        $responsePdf->assertSessionHasErrors('photo');
+
+        // Ukuran melebihi 2048 KB (3 MB)
+        $fotoBesar = UploadedFile::fake()->image('besar.jpg')->size(3072);
+        $responseBesar = $this->actingAs($user)->put(route('profil.update'), [
+            'name' => $user->name,
+            'email' => $user->email,
+            'photo' => $fotoBesar,
+        ]);
+        $responseBesar->assertSessionHasErrors('photo');
+    }
+
+    public function test_menolak_kampus_dan_prodi_melebihi_120_karakter(): void
+    {
+        $user = User314::factory()->create();
+        $teksPanjang = str_repeat('a', 121);
+
+        $response = $this->actingAs($user)->put(route('profil.update'), [
+            'name' => $user->name,
+            'email' => $user->email,
+            'campus' => $teksPanjang,
+            'study_program' => $teksPanjang,
+        ]);
+
+        $response->assertSessionHasErrors(['campus', 'study_program']);
+    }
+
+    public function test_sandi_pendek_ditolak_dengan_pesan_bahasa_indonesia(): void
+    {
+        $user = User314::factory()->create([
+            'password' => Hash::make('password_lama123'),
+        ]);
+
+        $response = $this->actingAs($user)->put(route('profil.sandi'), [
+            'current_password' => 'password_lama123',
+            'password' => '1234',
+            'password_confirmation' => '1234',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'password' => 'Kata sandi baru minimal 8 karakter.',
+        ]);
+    }
+
+    public function test_administrator_terakhir_tidak_dapat_menonaktifkan_dirinya_sendiri(): void
+    {
+        $adminRole = Role::where('name', 'administrator')->first();
+        $admin = User314::factory()->create([
+            'role_id' => $adminRole->id,
+            'is_active' => true,
+        ]);
+        $admin->assignRole('administrator');
+
+        $response = $this->actingAs($admin)->delete(route('profil.destroy'));
+
+        $response->assertRedirect(route('profil.index'));
+        $response->assertSessionHasErrors([
+            'nonaktifkan' => 'Administrator terakhir yang aktif tidak dapat dinonaktifkan.',
+        ]);
+        $this->assertTrue($admin->fresh()->is_active);
+    }
+
+    public function test_administrator_dapat_menonaktifkan_dirinya_jika_masih_ada_admin_aktif_lain(): void
+    {
+        $adminRole = Role::where('name', 'administrator')->first();
+
+        $admin1 = User314::factory()->create([
+            'role_id' => $adminRole->id,
+            'is_active' => true,
+        ]);
+        $admin1->assignRole('administrator');
+
+        $admin2 = User314::factory()->create([
+            'role_id' => $adminRole->id,
+            'is_active' => true,
+        ]);
+        $admin2->assignRole('administrator');
+
+        $response = $this->actingAs($admin1)->delete(route('profil.destroy'));
+
+        $response->assertRedirect('/');
+        $this->assertGuest();
+        $this->assertFalse($admin1->fresh()->is_active);
+        $this->assertTrue($admin2->fresh()->is_active);
+    }
+
+    public function test_menonaktifkan_akun_memutus_seluruh_sesi_di_perangkat_lain(): void
+    {
+        $user = User314::factory()->create([
+            'is_active' => true,
+        ]);
+
+        // Simulasikan sesi aktif pengguna yang tersimpan di perangkat lain pada tabel sessions
+        DB::table('sessions')->insert([
+            'id' => 'sesi-perangkat-lain-123',
+            'user_id' => $user->id,
+            'ip_address' => '192.168.1.50',
+            'user_agent' => 'Perangkat Lain',
+            'payload' => base64_encode('test'),
+            'last_activity' => time(),
+        ]);
+
+        $this->assertDatabaseHas('sessions', [
+            'id' => 'sesi-perangkat-lain-123',
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)->delete(route('profil.destroy'));
+
+        $response->assertRedirect('/');
+        $this->assertGuest();
+        $this->assertDatabaseMissing('sessions', [
+            'user_id' => $user->id,
+        ]);
+
+        // Permintaan lanjutan dari perangkat lain dengan akun nonaktif juga langsung diputus oleh middleware
+        $perangkatLain = $this->actingAs($user->fresh())->get(route('profil.index'));
+        $perangkatLain->assertRedirect(route('auth.masuk'));
+        $this->assertGuest();
     }
 }
