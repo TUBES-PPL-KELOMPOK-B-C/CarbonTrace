@@ -18,7 +18,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Laravel Dusk (tes browser, branch Test_Dusk): tidak didaftarkan otomatis, karena paketnya
+        // membuka rute /_dusk/login tanpa kata sandi. Rute itu hanya ada di server tes Dusk
+        // (APP_ENV=dusk); di konsol cukup perintah artisan dusk-nya saja.
+        if (class_exists(\Laravel\Dusk\DuskServiceProvider::class)
+            && ($this->app->environment('dusk') || $this->app->runningInConsole())) {
+            $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
+        }
     }
 
     /**

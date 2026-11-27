@@ -20,6 +20,9 @@
 @endphp
 
 @section('isi')
+    {{-- Pesan dari halaman lain yang mengalihkan ke sini (mis. serah terima admin, kuis awal dilewati) --}}
+    <x-notifikasi />
+
     <p class="ds-sapa">Halo, {{ \Illuminate\Support\Str::before($pengguna->name, ' ') }}. Ini ringkasan jejak karbonmu.</p>
 
     {{-- Pengumuman terbaru yang sedang berlaku (PBI-18) --}}
