@@ -4,7 +4,9 @@
     'lebar' => '480px',
 ])
 
-<div id="{{ $id }}-backdrop" class="ct-latar-belakang hidden" onclick="if(event.target === this) document.getElementById('{{ $id }}').classList.add('translate-x-full'); setTimeout(() => this.classList.add('hidden'), 200);">
+{{-- Kedua perintah penutup ada di dalam kurung kurawal: tanpa itu setTimeout tetap jalan pada klik apa pun
+     di dalam panel (misalnya klik kolom isian), sehingga panel langsung tertutup. --}}
+<div id="{{ $id }}-backdrop" class="ct-latar-belakang hidden" onclick="if (event.target === this) { document.getElementById('{{ $id }}').classList.add('translate-x-full'); setTimeout(() => this.classList.add('hidden'), 200); }">
     <div id="{{ $id }}" class="ct-panel-geser translate-x-full transition-transform duration-200" role="dialog" aria-modal="true" aria-labelledby="{{ $id }}-judul" style="max-width: {{ $lebar }};">
         <div class="flex items-center justify-between p-5 border-b" style="border-color: var(--ct-border); background: var(--ct-surface);">
             <h3 id="{{ $id }}-judul" class="text-lg font-bold" style="color: var(--ct-text);">{{ $judul }}</h3>
