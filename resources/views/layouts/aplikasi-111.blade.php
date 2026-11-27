@@ -16,6 +16,10 @@
         'pengingat' => '<circle cx="12" cy="13" r="7"/><path d="M12 9v4l2 2M5 4 2 7M19 4l3 3"/>',
         'laporan' => '<path d="M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h7"/>',
         'tantangan' => '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+        'kategori' => '<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/>',
+        'faktor' => '<path d="M4 20h16M7 16V9M12 16V5M17 16v-4"/>',
+        'konversi' => '<path d="M4 8h13l-3-3M20 16H7l3 3"/>',
+        'lencana' => '<circle cx="12" cy="9" r="5"/><path d="M8.5 13.5L7 21l5-2.5L17 21l-1.5-7.5"/>',
         'peringkat' => '<path d="M8 21V11H4v10zM14 21V5h-4v16zM20 21v-7h-4v7z"/>',
         'edukasi' => '<path d="M4 5h6a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h6z"/>',
         'profil' => '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
@@ -26,16 +30,6 @@
 
     // [label, rute, ikon, pola rute aktif, subfitur]
     $menu = [
-        ['Dashboard', 'dashboard.index', '<path d="M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-4H4z"/>', true],
-        ['Catat Aktivitas', 'aktivitas.create', '<circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/>', true],
-        ['Riwayat', 'aktivitas.index', '<path d="M4 12a8 8 0 1 0 2.3-5.7L4 8.6"/><path d="M4 4v4.6h4.6M12 8v4l3 2"/>', true],
-        ['Target', 'target.index', '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8"/>', true],
-        ['Tantangan', 'ikut.daftar', '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>', false],
-        ['Lencana', 'lencana.galeri', '<circle cx="12" cy="9" r="5"/><path d="M8.5 13.5L7 21l5-2.5L17 21l-1.5-7.5"/>', false],
-        ['Papan Peringkat', 'peringkat.index', '<path d="M8 21V11H4v10zM14 21V5h-4v16zM20 21v-7h-4v7z"/>', true],
-        ['Edukasi', 'artikel.publik', '<path d="M4 5h6a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h6z"/>', false],
-        ['Rumah Tangga', 'rumah.index', '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>', true],
-        ['Profil', 'profil.index', '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>', true],
         ['Dashboard', 'dashboard.index', 'dashboard', 'dashboard*', []],
         ['Aktivitas', null, 'aktivitas', null, [
             ['Catat Aktivitas', 'aktivitas.create', 'catat', 'aktivitas.create'],
@@ -48,6 +42,7 @@
             ['Laporan', 'laporan.index', 'laporan', 'laporan.*'],
         ]],
         ['Tantangan', 'ikut.daftar', 'tantangan', 'ikut.*', []],
+        ['Lencana', 'lencana.galeri', 'lencana', 'lencana.galeri', []],
         ['Papan Peringkat', 'peringkat.index', 'peringkat', 'peringkat.*', []],
         ['Edukasi', 'artikel.publik', 'edukasi', 'artikel.publik|artikel.baca', []],
         ['Profil', null, 'profil', null, [
@@ -62,6 +57,11 @@
         ? [
             ['Manajemen Pengguna', 'pengguna.index', 'pengguna', 'pengguna.*'],
             ['Bank Soal Kuis', 'kuis.index', 'kuis', 'kuis.*'],
+            // PBI-07, PBI-08, PBI-09 (modul Data Master Emisi, Renaya-154)
+            ['Kategori Emisi', 'categories.index', 'kategori', 'categories.*'],
+            ['Faktor Emisi', 'emission-factors.index', 'faktor', 'emission-factors.*'],
+            ['Konversi Satuan', 'conversion-units.index', 'konversi', 'conversion-units.*|portion-units.*|appliances.*'],
+            ['Kelola Lencana', 'lencana.index', 'lencana', 'lencana.index'],
         ]
         : [];
 
