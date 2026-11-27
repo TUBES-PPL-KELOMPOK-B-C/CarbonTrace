@@ -48,6 +48,7 @@
         ['Profil', null, 'profil', null, [
             ['Profil Saya', 'profil.index', 'profil', 'profil.*'],
             ['Rumah Tangga', 'rumah.index', 'rumah', 'rumah.*'],
+            ['Kuis Awal', 'kuis-awal.hasil', 'kuis', 'kuis-awal.mulai|kuis-awal.hasil'],
         ]],
     ];
 
@@ -57,6 +58,7 @@
         ? [
             ['Manajemen Pengguna', 'pengguna.index', 'pengguna', 'pengguna.*'],
             ['Bank Soal Kuis', 'kuis.index', 'kuis', 'kuis.*'],
+            ['Hasil Kuis Awal', 'kuis-awal.ringkasan', 'kuis', 'kuis-awal.ringkasan'],
             // PBI-07, PBI-08, PBI-09 (modul Data Master Emisi, Renaya-154)
             ['Kategori Emisi', 'categories.index', 'kategori', 'categories.*'],
             ['Faktor Emisi', 'emission-factors.index', 'faktor', 'emission-factors.*'],

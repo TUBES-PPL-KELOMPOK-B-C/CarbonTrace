@@ -35,6 +35,18 @@
         </aside>
     @endif
 
+    {{-- KF-25: ajakan mengisi kuis awal selama garis dasar belum ada (bukan untuk administrator) --}}
+    @if (! $gagal($emisi) && ($emisi['garisDasar'] ?? null) === null && ($emisi['soalKuis'] ?? 0) > 0
+        && Route::has('kuis-awal.mulai') && ! auth()->user()->hasAnyRole(['administrator', 'admin']))
+        <section class="ds-kuis" aria-labelledby="ds-kuis-judul">
+            <div>
+                <h2 class="ds-kuis__judul" id="ds-kuis-judul">Isi kuis awal untuk mengetahui garis dasar emisimu</h2>
+                <p class="ds-kuis__teks">{{ $emisi['soalKuis'] }} pertanyaan singkat. Hasilnya jadi angka pembanding untuk catatan harianmu.</p>
+            </div>
+            <a href="{{ route('kuis-awal.mulai') }}" class="ct-tombol ct-tombol--utama">Mulai Kuis</a>
+        </section>
+    @endif
+
     {{-- Baris 1: empat kartu statistik --}}
     <section class="ds-statistik" aria-label="Ringkasan angka">
         @include('dashboard._kartu-statistik-111', [
@@ -42,6 +54,7 @@
             'gagal' => $gagal($emisi),
             'angka' => $kg($emisi['hariIni'] ?? 0),
             'satuan' => 'kg CO2e',
+            'keterangan' => isset($emisi['garisDasar']) ? 'Garis dasar kuis awal '.$kg($emisi['garisDasar']).' kg per hari' : null,
         ])
         @include('dashboard._kartu-statistik-111', [
             'label' => 'Emisi bulan ini',

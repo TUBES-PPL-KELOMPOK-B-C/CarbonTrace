@@ -38,6 +38,7 @@ class CatatNotifikasiPengisian111
         'pengguna' => 'Manajemen Pengguna',
         'kuis' => 'Bank Soal Kuis',
         'artikel' => 'Edukasi',
+        'kuis-awal' => 'Kuis Awal',
     ];
 
     public function handle(Request $request, Closure $next): Response

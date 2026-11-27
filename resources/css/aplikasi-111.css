@@ -240,3 +240,62 @@ a.ap-pengguna:focus-visible { outline: 2px solid var(--ct-primary); outline-offs
   }
   .ap-bawah__tautan--nanti { opacity: .45; }
 }
+
+/* KF-25 Kuis Awal (halaman kuis-awal-111) */
+.ka-wadah { max-width: 720px; margin: 0 auto; display: grid; gap: var(--ct-s5); }
+.ka-kartu { display: grid; gap: var(--ct-s4); }
+.ka-kemajuan { display: grid; gap: var(--ct-s2); }
+.ka-kemajuan__teks { margin: 0; font-size: 13px; font-weight: 600; color: var(--ct-text-muted); }
+.ka-kemajuan__batang { height: 6px; border-radius: 999px; background: var(--ct-surface); overflow: hidden; }
+.ka-kemajuan__batang span { display: block; height: 100%; background: linear-gradient(90deg, var(--ct-primary), var(--ct-accent)); }
+.ka-form { display: grid; gap: var(--ct-s4); }
+.ka-pilihan { border: 0; margin: 0; padding: 0; display: grid; gap: var(--ct-s3); }
+.ka-soal { padding: 0; margin-bottom: var(--ct-s3); font-size: 20px; font-weight: 700; line-height: 1.4; color: var(--ct-text); }
+.ka-opsi {
+  display: flex; align-items: center; gap: var(--ct-s3);
+  padding: var(--ct-s3) var(--ct-s4); border: 1px solid var(--ct-border); border-radius: var(--ct-r-ctrl);
+  background: var(--ct-surface); cursor: pointer; transition: border-color .15s ease;
+}
+.ka-opsi:hover { border-color: var(--ct-primary); }
+.ka-opsi:has(input:checked) { border-color: var(--ct-primary); background: color-mix(in srgb, var(--ct-primary) 10%, var(--ct-surface)); }
+.ka-opsi input { accent-color: var(--ct-primary); width: 18px; height: 18px; flex: none; }
+.ka-aksi { display: flex; justify-content: space-between; gap: var(--ct-s3); flex-wrap: wrap; }
+.ka-lewati { display: grid; justify-items: center; gap: var(--ct-s2); text-align: center; font-size: 13px; color: var(--ct-text-muted); }
+.ka-lewati p { margin: 0; }
+.ka-hasil { text-align: center; justify-items: center; }
+.ka-hasil__label { margin: 0; font-size: 13px; font-weight: 600; color: var(--ct-text-muted); text-transform: uppercase; letter-spacing: .06em; }
+.ka-hasil__angka { margin: 0; font-size: 44px; font-weight: 800; color: var(--ct-primary); line-height: 1.1; }
+.ka-hasil__angka span { font-size: 16px; font-weight: 600; color: var(--ct-text-muted); }
+.ka-hasil__ket { margin: 0; max-width: 52ch; font-size: 14px; color: var(--ct-text-muted); }
+.ka-hasil .ka-aksi { justify-content: center; }
+.ka-pengantar { margin: 0 0 var(--ct-s5); color: var(--ct-text-muted); }
+.ka-pengantar a { color: var(--ct-primary); }
+.ka-angka { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--ct-s4); margin-bottom: var(--ct-s5); }
+.ka-angka__label { margin: 0 0 var(--ct-s2); font-size: 13px; font-weight: 600; color: var(--ct-text-muted); }
+.ka-angka__nilai { margin: 0; font-size: 28px; font-weight: 800; }
+.ka-angka__nilai span { font-size: 13px; font-weight: 600; color: var(--ct-text-muted); }
+.ka-kartu + .ka-kartu { margin-top: var(--ct-s5); }
+.ka-wadah .ka-kartu + .ka-kartu { margin-top: 0; }
+.ka-sebaran { display: grid; gap: var(--ct-s2); padding-bottom: var(--ct-s4); border-bottom: 1px solid var(--ct-border); }
+.ka-sebaran:last-child { border-bottom: 0; padding-bottom: 0; }
+.ka-sebaran__soal { margin: 0; font-weight: 700; }
+.ka-sebaran__baris { display: grid; grid-template-columns: minmax(0, 2fr) minmax(80px, 3fr) auto; align-items: center; gap: var(--ct-s3); font-size: 13px; }
+.ka-sebaran__label { color: var(--ct-text-muted); }
+.ka-sebaran__batang { height: 8px; border-radius: 999px; background: var(--ct-surface); overflow: hidden; }
+.ka-sebaran__batang span { display: block; height: 100%; background: var(--ct-primary); }
+.ka-sebaran__jumlah { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ka-redup { font-size: 12px; color: var(--ct-text-muted); }
+@media (max-width: 560px) {
+  .ka-sebaran__baris { grid-template-columns: 1fr auto; }
+  .ka-sebaran__batang { grid-column: 1 / -1; grid-row: 2; }
+}
+
+/* KF-25: ajakan kuis awal di dashboard */
+.ds-kuis {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--ct-s4); flex-wrap: wrap;
+  margin-bottom: var(--ct-s5); padding: var(--ct-s4) var(--ct-s5);
+  border: 1px solid color-mix(in srgb, var(--ct-primary) 40%, var(--ct-border)); border-radius: var(--ct-r-card);
+  background: color-mix(in srgb, var(--ct-primary) 8%, var(--ct-surface));
+}
+.ds-kuis__judul { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.ds-kuis__teks { margin: 0; font-size: 13px; color: var(--ct-text-muted); }
