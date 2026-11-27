@@ -152,10 +152,11 @@ Contoh: 4 kWh × 0,681 kg CO2e/kWh = **2,72 kg CO2e**. Pembagian jumlah penghuni
    php artisan key:generate
    ```
 
-3. Buat tabel beserta data contoh, lalu jalankan.
+3. Buat tabel beserta data contoh, lalu jalankan. `storage:link` cukup sekali, supaya foto profil yang diunggah bisa tampil.
 
    ```bash
    php artisan migrate --seed
+   php artisan storage:link
    npm run build
    php artisan serve
    ```
