@@ -188,9 +188,12 @@
                                     <form method="POST" action="{{ route('pengguna.peran', $p->id) }}" style="display: inline-block;">
                                         @csrf
                                         @method('PATCH')
-                                        <select name="role_id" onchange="this.form.submit()" class="ct-isian" style="height: 34px; padding: 0 10px; font-size: 13px; width: auto;">
-                                            @foreach ($semuaPeran as $peran)
-                                                <option value="{{ $peran->id }}" {{ $p->role_id == $peran->id ? 'selected' : '' }}>
+                                        {{-- Memilih Administrator = serah terima: admin hanya satu, admin lama menjadi pengguna biasa --}}
+                                        <select name="role_id" class="ct-isian" style="height: 34px; padding: 0 10px; font-size: 13px; width: auto;"
+                                                data-semula="{{ $p->role_id }}"
+                                                onchange="if (this.selectedOptions[0].dataset.admin && !confirm('Serahkan peran administrator kepada {{ addslashes($p->name) }}? Akunmu akan menjadi pengguna biasa dan tidak bisa membuka panel admin lagi.')) { this.value = this.dataset.semula; return; } this.form.submit();">
+                                            @foreach ($semuaPeran->whereIn('name', ['administrator', 'pengguna']) as $peran)
+                                                <option value="{{ $peran->id }}" {{ $p->role_id == $peran->id ? 'selected' : '' }} @if ($peran->name === 'administrator') data-admin="1" @endif>
                                                     {{ ucfirst($peran->name) }}
                                                 </option>
                                             @endforeach
@@ -267,8 +270,9 @@
 
                 <div class="ct-isian-grup">
                     <label class="ct-label" for="tambah-peran">Peran Akun *</label>
+                    {{-- Administrator hanya satu, jadi akun baru selalu pengguna biasa --}}
                     <select id="tambah-peran" name="role_id" class="ct-isian" required>
-                        @foreach ($semuaPeran as $peran)
+                        @foreach ($semuaPeran->whereIn('name', ['pengguna']) as $peran)
                             <option value="{{ $peran->id }}">{{ ucfirst($peran->name) }}</option>
                         @endforeach
                     </select>
