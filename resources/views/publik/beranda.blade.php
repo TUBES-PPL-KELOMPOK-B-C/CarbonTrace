@@ -3,6 +3,7 @@
 @section('judul', 'CarbonTrace — Platform Pelacakan dan Pemangkasan Jejak Karbon Harian')
 
 @section('isi')
+    <x-notifikasi />
     @include('publik.beranda._latar-022')
     @include('publik.beranda._navbar-022')
 

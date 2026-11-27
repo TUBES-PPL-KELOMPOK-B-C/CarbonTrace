@@ -22,9 +22,10 @@ class Autentikasi111 extends Controller
     private const BATAS_GAGAL = 5;
     private const LAMA_KUNCI_DETIK = 60;
 
-    public function tampilMasuk(): View
+    public function tampilMasuk(Request $request): View
     {
-        return view('auth.masuk-111');
+        // Diisi oleh simpanDaftar; diambil sekali supaya kolom email langsung terisi setelah mendaftar
+        return view('auth.masuk-111', ['emailBaru' => $request->session()->pull('email_baru')]);
     }
 
     public function prosesMasuk(Request $request): RedirectResponse
@@ -47,8 +48,11 @@ class Autentikasi111 extends Controller
     {
         $this->buatAkun($request);
 
-        // TODO: arahkan pengguna baru ke kuis awal (KF-25) setelah halamannya ada
-        return redirect()->route('dashboard.index');
+        // Pendaftaran tidak langsung memasukkan pengguna: kembali ke beranda, lalu masuk sendiri.
+        // Email disimpan di sesi sampai halaman masuk dibuka, supaya kolomnya sudah terisi.
+        $request->session()->put('email_baru', $request->validated('email'));
+
+        return redirect()->route('beranda')->with('sukses', 'Akun berhasil dibuat. Silakan masuk untuk mulai mencatat.');
     }
 
     public function keluar(Request $request): RedirectResponse
@@ -161,9 +165,6 @@ class Autentikasi111 extends Controller
 
             return $pengguna;
         });
-
-        Auth::login($pengguna);
-        $request->session()->regenerate();
 
         return $pengguna;
     }
