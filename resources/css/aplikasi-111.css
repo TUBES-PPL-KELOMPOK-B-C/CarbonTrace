@@ -107,8 +107,8 @@
   display: flex; align-items: center; justify-content: space-between; gap: var(--ct-s4);
   height: var(--ap-atas);
   padding: 0 var(--ct-s6);
-  background: color-mix(in srgb, var(--ct-bg) 85%, transparent);
-  backdrop-filter: blur(10px);
+  /* Pekat: halaman berlatar terang (mis. Data Master Emisi) tidak lagi tembus di balik bilah atas */
+  background: var(--ct-bg);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--ct-border);
 }

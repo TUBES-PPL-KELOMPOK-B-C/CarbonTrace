@@ -167,6 +167,20 @@
             </button>
         </form>
     </aside>
+    {{-- Posisi gulir sidebar dipertahankan saat pindah halaman (disimpan oleh aplikasi-111.js),
+         dan menu yang sedang dibuka selalu terlihat. Langsung di sini supaya sidebar tidak melompat ke atas. --}}
+    <script>
+        (function () {
+            var sisi = document.querySelector('.ap-sisi');
+            if (!sisi) return;
+            try { var g = sessionStorage.getItem('ct-sisi-gulir'); if (g !== null) sisi.scrollTop = +g; } catch (e) {}
+            var aktif = sisi.querySelector('[aria-current="page"]');
+            if (aktif) {
+                var a = aktif.getBoundingClientRect(), b = sisi.getBoundingClientRect();
+                if (a.top < b.top || a.bottom > b.bottom) aktif.scrollIntoView({ block: 'center' });
+            }
+        })();
+    </script>
 
     <div class="ap-utama">
         <header class="ap-atas">
