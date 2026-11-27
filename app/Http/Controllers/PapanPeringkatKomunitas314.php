@@ -101,6 +101,11 @@ class PapanPeringkatKomunitas314 extends Controller
             // Query agregasi groupBy di sisi basis data
             $query = DB::table('users')
                 ->where('users.is_active', true)
+                // Akun administrator bukan peserta, jadi tidak ikut diperingkat.
+                ->whereNotIn('users.id', DB::table('model_has_roles')
+                    ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                    ->whereIn('roles.name', ['administrator', 'admin'])
+                    ->select('model_has_roles.model_id'))
                 ->select([
                     'users.id',
                     'users.name',

@@ -403,9 +403,10 @@
 .ct-baris-saya-tetap {
     position: fixed;
     bottom: 20px;
-    left: 50%;
+    /* Dipusatkan di area isi, di kanan sidebar (--ap-sisi dari layouts.aplikasi-111) */
+    left: calc(var(--ap-sisi, 0px) + (100% - var(--ap-sisi, 0px)) / 2);
     transform: translateX(-50%);
-    width: calc(100% - 48px);
+    width: calc(100% - var(--ap-sisi, 0px) - 48px);
     max-width: var(--ct-max, 1200px);
     background: rgba(17, 26, 23, 0.95);
     backdrop-filter: blur(12px);
@@ -581,5 +582,18 @@
     }
     .ct-kolom-pengguna {
         justify-content: flex-end;
+    }
+}
+
+/* Ruang di bawah daftar supaya baris terakhir tidak tertutup bilah "Posisi Kamu" */
+.ct-peringkat-wadah:has(.ct-baris-saya-tetap) { padding-bottom: 96px; }
+
+/* Layar sempit: sidebar disembunyikan dan ada menu bawah, jadi bilah memakai lebar penuh di atas menu itu */
+@media (max-width: 560px) {
+    .ct-baris-saya-tetap {
+        left: 50%;
+        width: calc(100% - 24px);
+        bottom: calc(var(--ap-bawah, 64px) + 12px);
+        padding: 10px 14px;
     }
 }
